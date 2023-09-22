@@ -1,11 +1,50 @@
 # Noms de fonctions optimals en Solidity
 
+## TL;DR
+
+- Le "function dispatcher" est un gestionnaire d'accès aux fonctions d'un smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
+- Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
+
+
+
 ## Présentation
 
-Gestionnaire d'accès, porte d'entrée de l'extérieur vers le contrat
-Il est commun de penser que ...
+Le "function dispatcher" (ou gestionnaire de fonctions) dans les contrats intelligents écrits en Solidity est une partie du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
 
-Ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci (external, view)
+Si on imagine un contrat intelligent comme une boîte noir avec des fonctions à l'intérieur.  Ces fonctions peuvent être comme des commandes que vous pouvez donner à la boîte pour lui faire faire différentes choses.
+
+Le "function dispatcher" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.
+
+Lorsque vous interagissez avec un contrat intelligent en utilisant une application ou une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "function dispatcher" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
+
+En résumé, le "function dispatcher" est comme un chef d'orchestre pour les appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
+
+En solidity, le "function dispatcher" est généré via le compilateur, inutile donc de se charger de cette tâche complexe. 
+
+Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurence les fonctions ayant pour attribut d'accès external et public (internal à tester ???)
+
+1. **External** : Les fonctions externes sont conçues pour être appelées depuis l'**extérieur du contrat**, généralement par d'autres contrats ou des comptes externes. C'est le niveau de visibilité que vous utilisez lorsque vous souhaitez exposer une interface publique à votre contrat.
+
+2. **Public** : Les fonctions publiques sont similaires aux fonctions externes, mais elles offrent également une méthode de lecture de données qui ne consomme pas de gaz. Les fonctions publiques sont accessibles depuis l'**extérieur du contrat**.
+
+3. **Internal** : Les fonctions internes peuvent être appelées à l'intérieur du contrat, ainsi que depuis d'autres contrats héritant du contrat actuel. Elles ne sont pas accessibles depuis l'**extérieur du contrat** via une transaction directe.
+
+Par exemple :
+
+![](solidity_access.png)
+
+Dans cet exemple, la fonction `setValeur` est marquée comme "*external*" car elle modifie l'état du contrat et doit être appelée depuis l'extérieur.
+
+La fonction `getValeur` est marquée comme étant "*public*", elle permet ainsi de lire la valeur sans en modifier l'état.
+
+La fonction `setInternalValue` peut être appelée à partir de l'intérieur du contrat lui-même ou par d'autres contrats qui héritent de `MonContrat`.
+
+La fonction `getInternalValue` est publique et permet de lire la valeur de `internalValue`.
+
+
+## Un exemple simple
+
+
 
 ## Signatures des fonctions
 
