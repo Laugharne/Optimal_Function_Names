@@ -23,15 +23,14 @@ En résumé, le "function dispatcher" est comme un chef d'orchestre lors des app
 
 ## Fonctionnement
 
-TODO
+Lors d'un appel à une fonction d'un smart contract, le "function dispatcher" récupère l'empreinte dans le `calldata` produit un `revert` si l'appel ne peut être mis en relation avec une fonction du contrat.
 
-Schéma switch/case
-https://excalidraw.com/#json=InELTut-1p4WQ5S_9yQbJ,19njz8QgTR6FqUUurtHA7Q
+Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou un ensemble de `if/else`, tel qu'on le trouver dans de nombreux langages de programmation.
 
 
 ## Empreintes et Signatures des fonctions
 
-La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
+La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
 
 L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poid fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/). Cela selmon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector).
 
@@ -39,7 +38,7 @@ Je précise bien que je perle de l'empreinte pour **Solidity**, ce n'est pas for
 
 Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)
 
-Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare mais existant malgré plus de 4 milliards de possibilités, comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
+Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
 
 
 ## Solidity
@@ -167,7 +166,27 @@ tag 2
   DUP1 
   REVERT
 ```
+
 ![](functions_dispatcher_diagram.png)
+
+https://excalidraw.com/#json=InELTut-1p4WQ5S_9yQbJ,19njz8QgTR6FqUUurtHA7Q
+
+Ordre d'évaluation
+
+| Ordre | Empreintes | Signatures         |
+| ----- | ---------- | ------------------ |
+| 1     | 20965255   | getValue()         |
+| 2     | 3FA4F245   | ...                |
+| 3     | 55241077   | setValue(uint256)  |
+| 4     | E778DDC1   | getInternalValue() |
+
+La fonction d'empreinte `3FA4F245` est en fait un **getter** implicite da donnée publique `value`
+
+```solidity
+  uint256 public value;
+```
+
+
 
 ## Yul
 
