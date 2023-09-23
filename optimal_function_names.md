@@ -5,7 +5,7 @@
 
 - Le "function dispatcher" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
-- Pourrait s'appeler "external access dispatcher, car concerne aussi les données publiques.
+- Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
 
 
 ## Présentation
@@ -180,7 +180,7 @@ Ordre d'évaluation
 | 3     | 55241077   | setValue(uint256)  |
 | 4     | E778DDC1   | getInternalValue() |
 
-La fonction d'empreinte `3FA4F245` est en fait un **getter** implicite da donnée publique `value`
+La fonction d'empreinte `3FA4F245` est en fait un **getter** implicite de la donnée publique `value`, généré à la compilation.
 
 ```solidity
   uint256 public value;
