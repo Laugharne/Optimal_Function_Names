@@ -173,7 +173,7 @@ tag 2
 
 #### Diagramme
 
-Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade
+Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade.
 
 ![](functions_dispatcher_diagram.png)
 
@@ -242,7 +242,7 @@ tag 13
   RETURN
 ```
 
-getter ayant d'ailleurs un code identique à celui de la fonction `getValue()`
+`getter` ayant d'ailleurs un code identique à celui de la fonction `getValue()`
 
 ```yul
 tag getValue_0
@@ -272,7 +272,7 @@ tag getValue_2
 
 Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
 
-**Pour info** : Pour ceux qui seraient intéressé, voici un [**article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(*en anglais*) sur les `automatic storage getters` en Solidity. On peut retirer quatre points du contenu de cette article.
+**Pour info** : Pour ceux qui voudraient aller plus loin, voici [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(*en anglais*) sur les `automatic storage getters` en Solidity. On peut résumé le contenu de cet article en quatre points.
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
@@ -280,7 +280,7 @@ Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `publ
 
 3. Ne publiez que les variables de stockage qui sont essentielles, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
 
-4. Des getters explicites peuvent être requis pour les types `array` et les `mapping`. Ils ne sont pas générés automatiquement.
+4. Des getters explicites peuvent être requis pour les types `array` et  `mapping`. Ils ne sont pas générés automatiquement.
 
 
 ## Yul
@@ -327,11 +327,18 @@ object "runtime" {
             revert(0, 0)
         }
 
+        /* ---------- calldata decoding functions ----------- */
+        function selector() -> s {
+            s := div(calldataload(0), 0x100000000000000000000000000000000000000000000000000000000)
+        }
+
   ...
 
 ```
 
-Un des avantages de Yul est que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
+On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
+
+Réaliser un contrat **100% en Yul**, oblige à coder soi même le "function dispatcher", ce qui implique que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
 
 
 
@@ -358,12 +365,12 @@ Seuil(s) pivot
 Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(n)** dans le cas critique où l'arbre est complètement déséquilibré et ressemble à une liste chaînée. Ce problème est écarté si l'arbre est équilibré par rotation au fur et à mesure des insertions pouvant créer des listes trop longues. 
 [Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche#Recherche)
 
+
 ## Conclusions
 
 Le "function dispatcher" est ainsi le reflet de l'ABI.
 
-L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. 
-Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou après évaluation automatique lors de tests pratiques)
+L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques)
 
 Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture technique de cet article.
 
