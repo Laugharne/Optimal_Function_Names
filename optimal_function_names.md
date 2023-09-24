@@ -12,7 +12,7 @@
 
 Le "function dispatcher" (ou gestionnaire de fonctions) dans les contrats intelligents (*smart contracts*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
 
-Si on imagine un contrat intelligent comme une boîte noir avec des fonctions à l'intérieur.  Ces fonctions peuvent être comme des commandes que vous pouvez donner à la boîte pour lui faire faire différentes choses.
+Si on imagine un contrat intelligent comme une boîte noire avec des fonctions à l'intérieur.  Ces fonctions peuvent être comme des commandes que vous pouvez donner à la boîte pour lui faire faire différentes choses.
 
 Le "function dispatcher" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.
 
@@ -25,20 +25,20 @@ En résumé, le "function dispatcher" est comme un chef d'orchestre lors des app
 
 Lors d'un appel à une fonction d'un smart contract, le "function dispatcher" récupère l'empreinte dans le `calldata` produit un `revert` si l'appel ne peut être mis en relation avec une fonction du contrat.
 
-Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou un ensemble de `if/else`, tel qu'on le trouver dans de nombreux langages de programmation.
+Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou un ensemble de `if/else`, tel qu'on le trouve dans de nombreux autres langages de programmation.
 
 
 ## Empreintes et Signatures des fonctions
 
 La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
 
-L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poid fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/). Cela selmon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector).
+L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector).
 
 Je précise bien que je perle de l'empreinte pour **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
 
 Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)
 
-Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
+Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
 
 
 ## Solidity
@@ -53,16 +53,16 @@ function square(uint32 num) public pure returns (uint32) {
 
 Les signatures, hash et empreinte suivantes :
 
-|           |                                                                    |
+| Fonction  | square(uint32 num) public pure returns (uint32)                    |
 | --------- | ------------------------------------------------------------------ |
 | Signature | `square(uint32)`                                                   |
 | Hash      | `d27b38416d4826614087db58e4ea90ac7199f7f89cb752950d00e21eb615e049` |
 | Empreinte | `d27b3841`                                                         |
 
 
-En Solidity, le "function dispatcher" est généré par le compilateur, inutile donc de se charger de cette tâche complexe. 
+En Solidity, le "function dispatcher" est généré par le compilateur, inutile donc de se charger du codage de cette tâche complexe. 
 
-Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurence les fonctions ayant pour attribut d'accès external et public
+Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurrence les fonctions ayant pour attribut d'accès external et public
 
 
 ### Pour rappel
@@ -109,7 +109,7 @@ La fonction `setInternalValue` peut être appelée à partir de l'intérieur du 
 La fonction `getInternalValue` est publique et permet de lire la valeur de `internalValue`.
 
 
-### A la compilation
+### À la compilation
 
 Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et empreintes suivantes :
 
@@ -120,12 +120,16 @@ Si nous reprenons le précédent code utilisé en exemple, nous obtenons les sig
 | **`setInternalValue(uint256 _newValue) internal`**     | `setInternalValue(uint256)` | `6115694f...7ce1` | **`6115694f`** |
 | **`getInternalValue() public view returns (uint256)`** | `getInternalValue()`        | `e778ddc1...c094` | **`e778ddc1`** |
 
-(*Les hash issus du Keccak ont été tronqués volontairement*)
+(*Les hashs issus du Keccak ont été tronqués volontairement*)
 
-Si on examine l'ABI généré lors de la compilation, la fonction `setInternalValue()` n'apparait pas, ce qui est normal sa visibilité étant `internal` (voir plus haut)
+Si on examine l'ABI généré lors de la compilation, la fonction `setInternalValue()` n'apparait pas, ce qui est normal, sa visibilité étant `internal` (voir plus haut)
 
-On notera dans les données de l'ABI, la réference à la donnée du storage `value` qui est `public` (on y reviendra plus loin)
+On notera dans les données de l'ABI, la référence à la donnée du storage `value` qui est `public` (on y reviendra plus loin)
 
+
+#### Code généré
+
+Voici le code du "function dispatcher" généré par le compilateur `solc` (version de solidity : 0.8.13)
 
 ```yul
 tag 1
@@ -167,31 +171,119 @@ tag 2
   REVERT
 ```
 
+#### Diagramme
+
+Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade
+
 ![](functions_dispatcher_diagram.png)
 
 https://excalidraw.com/#json=InELTut-1p4WQ5S_9yQbJ,19njz8QgTR6FqUUurtHA7Q
 
-Ordre d'évaluation
 
-| Ordre | Empreintes | Signatures         |
-| ----- | ---------- | ------------------ |
-| 1     | 20965255   | getValue()         |
-| 2     | 3FA4F245   | ...                |
-| 3     | 55241077   | setValue(uint256)  |
-| 4     | E778DDC1   | getInternalValue() |
+#### Ordre d'évaluation
 
-La fonction d'empreinte `3FA4F245` est en fait un **getter** implicite de la donnée publique `value`, généré à la compilation.
+**Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
+
+| Ordre d'évaluation | Ordre dans le code | Empreintes | Signatures                   |
+| ------------------ | ------------------ | ---------- | ---------------------------- |
+| 1                  | **3**              | 20965255   | getValue()                   |
+| 2                  | **1**              | 3FA4F245   | value (*getter automatique*) |
+| 3                  | **2**              | 55241077   | setValue(uint256)            |
+| 4                  | **4**              | E778DDC1   | getInternalValue()           |
+
+En effet, les évaluations des empreintes de fonctions sont ordonnées par un tri ascendant sur leur valeur de.
+
+`20965255` < `3FA4F245` < `55241077` < `E778DDC1`
+
+
+#### getter() automatique
+
+La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, généré à la compilation.
 
 ```solidity
   uint256 public value;
 ```
 
+Nous retrouvons d'ailleurs dans les opcodes, l'empreinte de sélection (`3FA4F245`) et la fonction (à l'adresse `tag 4`) du getter automatique pour cette variable.
+
+**Sélecteur** :
+```yul
+  DUP1 
+  PUSH 3FA4F245  
+  EQ 
+  PUSH [tag] 4
+  JUMPI 
+```
+
+**Fonction** :
+```yul
+tag 4
+  JUMPDEST 
+  PUSH [tag] 11
+  PUSH [tag] 12
+  JUMP [in]
+tag 11
+  JUMPDEST 
+  PUSH 40
+  MLOAD 
+  PUSH [tag] 13
+  SWAP2 
+  SWAP1 
+  PUSH [tag] abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed_0
+  JUMP [in]
+tag 13
+  JUMPDEST 
+  PUSH 40
+  MLOAD 
+  DUP1 
+  SWAP2 
+  SUB 
+  SWAP1 
+  RETURN
+```
+
+Ayant d'ailleurs un code identique à celui de la fonction `getValue()`
+```yul
+tag getValue_0
+  JUMPDEST 
+  PUSH [tag] getValue_1
+  PUSH [tag] getValue_3
+  JUMP [in]
+tag getValue_1
+  JUMPDEST 
+  PUSH 40
+  MLOAD 
+  PUSH [tag] getValue_2
+  SWAP2 
+  SWAP1 
+  PUSH [tag] abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed_0
+  JUMP [in]
+tag getValue_2
+  JUMPDEST 
+  PUSH 40
+  MLOAD 
+  DUP1 
+  SWAP2 
+  SUB 
+  SWAP1 
+  RETURN 
+```
+
+Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
+
+**Pour info** : Un [article détaillé](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(en) sur les `automatic storage getters` en Solidity. On peut retirer quatre points de cette article.
+
+1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
+
+2. Bien que le code source du contrat avec les getters automatique soit plus court que celui avec des getters explicites, le coût du gaz est sensiblement le même. Les getters automatique ne sont pas « *gratuits* ».
+
+3. Ne publiez que les variables de stockage qui sont essentielles, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
+
+4. Des getters explicites peuvent être requis pour les types `array` et les `mapping`. Ils ne sont pas générés automatiquement.
 
 
 ## Yul
 
-
-## Huff
 
 TO DO
 
@@ -202,8 +294,6 @@ TO DO
 ## L'ordre de traitement
 - Ordre des fonctions dans le code source
 - Ordonnancé par la valeur de hash
-
-## Faire le lien
 
 ### Recherche linéaire
 
@@ -224,8 +314,8 @@ Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(
 
 Le "function dispatcher" est ainsi le reflet de l'ABI.
 
-L'optimisation pour l'exécution, n'est pas nécessaire pour les fonctions dites d'administration. 
-Par contre c'est à prioriser pour les fonctions supposément les plus fréquement appelées (à déterminer manuellement ou après évaluation automatique lors de tests pratiques)
+L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. 
+Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou après évaluation automatique lors de tests pratiques)
 
 Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture technique de cet article.
 
@@ -261,5 +351,6 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 
 - Divers
   - [en] [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
+  - [en] [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
 
 
