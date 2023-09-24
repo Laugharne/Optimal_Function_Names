@@ -25,7 +25,7 @@ En résumé, le "function dispatcher" est comme un chef d'orchestre lors des app
 
 Lors d'un appel à une fonction d'un smart contract, le "function dispatcher" récupère l'empreinte dans le `calldata` produit un `revert` si l'appel ne peut être mis en relation avec une fonction du contrat.
 
-Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou un ensemble de `if/else`, tel qu'on le trouve dans de nombreux autres langages de programmation.
+Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else` tel qu'on le trouve dans de nombreux autres langages de programmation.
 
 
 ## Empreintes et Signatures des fonctions
@@ -191,14 +191,14 @@ https://excalidraw.com/#json=InELTut-1p4WQ5S_9yQbJ,19njz8QgTR6FqUUurtHA7Q
 | 3                  | **2**              | 55241077   | setValue(uint256)            |
 | 4                  | **4**              | E778DDC1   | getInternalValue()           |
 
-En effet, les évaluations des empreintes de fonctions sont ordonnées par un tri ascendant sur leur valeur de.
+En effet, les évaluations des empreintes de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
 
 `20965255` < `3FA4F245` < `55241077` < `E778DDC1`
 
 
 #### getter() automatique
 
-La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, généré à la compilation.
+La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par la compilation.
 
 ```solidity
   uint256 public value;
@@ -242,7 +242,8 @@ tag 13
   RETURN
 ```
 
-Ayant d'ailleurs un code identique à celui de la fonction `getValue()`
+getter ayant d'ailleurs un code identique à celui de la fonction `getValue()`
+
 ```yul
 tag getValue_0
   JUMPDEST 
@@ -271,7 +272,7 @@ tag getValue_2
 
 Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
 
-**Pour info** : Un [article détaillé](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(en) sur les `automatic storage getters` en Solidity. On peut retirer quatre points de cette article.
+**Pour info** : Pour ceux qui seraient intéressé, voici un [**article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(*en anglais*) sur les `automatic storage getters` en Solidity. On peut retirer quatre points du contenu de cette article.
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
@@ -286,6 +287,53 @@ Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `publ
 
 
 TO DO
+
+Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) entièrement écrit en **Yul**.
+
+```yul
+object "runtime" {
+    code {
+        // Protection against sending Ether
+        require(iszero(callvalue()))
+
+        // Dispatcher
+        switch selector()
+        case 0x70a08231 /* "balanceOf(address)" */ {
+            returnUint(balanceOf(decodeAsAddress(0)))
+        }
+        case 0x18160ddd /* "totalSupply()" */ {
+            returnUint(totalSupply())
+        }
+        case 0xa9059cbb /* "transfer(address,uint256)" */ {
+            transfer(decodeAsAddress(0), decodeAsUint(1))
+            returnTrue()
+        }
+        case 0x23b872dd /* "transferFrom(address,address,uint256)" */ {
+            transferFrom(decodeAsAddress(0), decodeAsAddress(1), decodeAsUint(2))
+            returnTrue()
+        }
+        case 0x095ea7b3 /* "approve(address,uint256)" */ {
+            approve(decodeAsAddress(0), decodeAsUint(1))
+            returnTrue()
+        }
+        case 0xdd62ed3e /* "allowance(address,address)" */ {
+            returnUint(allowance(decodeAsAddress(0), decodeAsAddress(1)))
+        }
+        case 0x40c10f19 /* "mint(address,uint256)" */ {
+            mint(decodeAsAddress(0), decodeAsUint(1))
+            returnTrue()
+        }
+        default {
+            revert(0, 0)
+        }
+
+  ...
+
+```
+
+Un des avantages de Yul est que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
+
+
 
 
 ## Un exemple simple
@@ -343,6 +391,12 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
   - [fr] [Fonction de hachage — Wikipédia](https://fr.wikipedia.org/wiki/Fonction_de_hachage)
   - [en] [Hash function - Wikipedia](https://en.wikipedia.org/wiki/Hash_function)
   - [en] [Difference Between SHA-256 and Keccak-256 - GeeksforGeeks](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)
+
+- Reférences
+  - [en] [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
+  - [en] [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
+  - [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
+  - [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
 
 - Outils
   - [en] [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
