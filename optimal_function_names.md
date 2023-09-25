@@ -272,7 +272,7 @@ tag getValue_2
 
 Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
 
-**Pour info** : Pour ceux qui voudraient aller plus loin, voici [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)(*en anglais*) sur les `automatic storage getters` en Solidity. On peut résumé le contenu de cet article en quatre points.
+**Pour info** : Pour ceux qui voudraient aller plus loin, voici [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity. On peut résumé le contenu de cet article en quatre points.
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
@@ -284,9 +284,6 @@ Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `publ
 
 
 ## Yul
-
-
-TO DO
 
 Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) entièrement écrit en **Yul**.
 
@@ -378,40 +375,40 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 ## Liens
 
 - Recherche dichotomique
-  - [fr] [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
-  - [en] [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
+  - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
+  - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
   
 - Arbre binaire de recherche
-  - [fr] [Arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche)
-  - [en] [Binary search tree - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_tree)
+  - 🇫🇷 [Arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche)
+  - 🇬🇧 [Binary search tree - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_tree)
   
 - Rotation d'un arbre binaire de recherche
-  - [fr] [Rotation d'un arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Rotation_d%27un_arbre_binaire_de_recherche)
-  - [en] [Tree rotation - Wikipedia](https://en.wikipedia.org/wiki/Tree_rotation)
-  - [en] [Self-balancing binary search tree - Wikipedia](https://en.wikipedia.org/wiki/Self-balancing_binary_search_tree)
+  - 🇫🇷 [Rotation d'un arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Rotation_d%27un_arbre_binaire_de_recherche)
+  - 🇬🇧 [Tree rotation - Wikipedia](https://en.wikipedia.org/wiki/Tree_rotation)
+  - 🇬🇧 [Self-balancing binary search tree - Wikipedia](https://en.wikipedia.org/wiki/Self-balancing_binary_search_tree)
 
 - Keccak
-  - [fr] [SHA-3 — Wikipédia](https://fr.wikipedia.org/wiki/SHA-3)
-  - [en] [SHA-3 - Wikipedia](https://en.wikipedia.org/wiki/SHA-3)
+  - 🇫🇷 [SHA-3 — Wikipédia](https://fr.wikipedia.org/wiki/SHA-3)
+  - 🇬🇧 [SHA-3 - Wikipedia](https://en.wikipedia.org/wiki/SHA-3)
 
 - Fonction de hachage
-  - [fr] [Fonction de hachage — Wikipédia](https://fr.wikipedia.org/wiki/Fonction_de_hachage)
-  - [en] [Hash function - Wikipedia](https://en.wikipedia.org/wiki/Hash_function)
-  - [en] [Difference Between SHA-256 and Keccak-256 - GeeksforGeeks](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)
+  - 🇫🇷 [Fonction de hachage — Wikipédia](https://fr.wikipedia.org/wiki/Fonction_de_hachage)
+  - 🇬🇧 [Hash function - Wikipedia](https://en.wikipedia.org/wiki/Hash_function)
+  - 🇬🇧 [Difference Between SHA-256 and Keccak-256 - GeeksforGeeks](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)
 
 - Reférences
-  - [en] [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
-  - [en] [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
-  - [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
-  - [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
+  - 🇬🇧 [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
+  - 🇬🇧 [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
+  - 🇬🇧 [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
+  - 🇬🇧 [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
 
 - Outils
-  - [en] [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
-  - [en] [Compiler Explorer](https://godbolt.org/)
-  - [en] [Ethereum Signature Database](https://www.4byte.directory/)
+  - 🇬🇧 [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
+  - 🇬🇧 [Compiler Explorer](https://godbolt.org/)
+  - 🇬🇧 [Ethereum Signature Database](https://www.4byte.directory/)
 
 - Divers
-  - [en] [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
-  - [en] [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
+  - 🇬🇧 [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
+  - 🇬🇧 [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
 
 
