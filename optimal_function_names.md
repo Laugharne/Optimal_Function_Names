@@ -34,6 +34,7 @@
 - Le "function dispatcher" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
+- Coder en Yul, résout la problématique de l'odonnancement.
 - Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'appel de ces dernières.
 
 
@@ -408,36 +409,7 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 - Recherche dichotomique
   - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
   - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
-  
-<!-- TOC -->
 
-- [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
-	- [TL;DR](#tldr)
-	- [Présentation](#pr%C3%A9sentation)
-	- [Fonctionnement](#fonctionnement)
-	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
-	- [Solidity](#solidity)
-		- [Pour rappel](#pour-rappel)
-		- [À la compilation](#%C3%A0-la-compilation)
-			- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
-			- [Diagramme](#diagramme)
-			- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
-			- [getter automatique](#getter-automatique)
-	- [Yul](#yul)
-	- [Un exemple simple](#un-exemple-simple)
-	- [L'ordre de traitement](#lordre-de-traitement)
-		- [Recherche linéaire](#recherche-lin%C3%A9aire)
-		- [Recherche par dichotomie](#recherche-par-dichotomie)
-	- [Optimisations](#optimisations)
-		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
-		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
-	- [Conclusions](#conclusions)
-	- [Liens](#liens)
-
-<!-- /TOC -->
-<!-- /TOC -->
-<!-- /TOC -->
-  
 - Rotation d'un arbre binaire de recherche
   - 🇫🇷 [Rotation d'un arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Rotation_d%27un_arbre_binaire_de_recherche)
   - 🇬🇧 [Tree rotation - Wikipedia](https://en.wikipedia.org/wiki/Tree_rotation)
