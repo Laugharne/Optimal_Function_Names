@@ -1,5 +1,32 @@
 # Optimisation des noms de fonctions avec les EVMs
 
+<!-- TOC -->
+
+- [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
+	- [TL;DR](#tldr)
+	- [Présentation](#pr%C3%A9sentation)
+	- [Fonctionnement](#fonctionnement)
+	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
+	- [Solidity](#solidity)
+		- [Pour rappel](#pour-rappel)
+		- [À la compilation](#%C3%A0-la-compilation)
+			- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
+			- [Diagramme](#diagramme)
+			- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
+			- [getter automatique](#getter-automatique)
+	- [Yul](#yul)
+	- [Un exemple simple](#un-exemple-simple)
+	- [L'ordre de traitement](#lordre-de-traitement)
+		- [Recherche linéaire](#recherche-lin%C3%A9aire)
+		- [Recherche par dichotomie](#recherche-par-dichotomie)
+	- [Optimisations](#optimisations)
+		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
+		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
+	- [Conclusions](#conclusions)
+	- [Liens](#liens)
+
+<!-- /TOC -->
+
 
 ## TL;DR
 
@@ -32,13 +59,13 @@ Le mécanisme de sélection est similaire, à un celui d'une structure `switch/c
 
 La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
 
-L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector).
+L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
 
 Je précise bien que je perle de l'empreinte pour **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
 
-Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)
+Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
 
-Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
+Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
 
 
 ## Solidity
@@ -177,8 +204,6 @@ Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en
 
 ![](functions_dispatcher_diagram.png)
 
-https://excalidraw.com/#json=InELTut-1p4WQ5S_9yQbJ,19njz8QgTR6FqUUurtHA7Q
-
 
 #### Ordre d'évaluation
 
@@ -280,12 +305,12 @@ Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `publ
 
 3. Ne publiez que les variables de stockage qui sont essentielles, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
 
-4. Des getters explicites peuvent être requis pour les types `array` et  `mapping`. Ils ne sont pas générés automatiquement.
+4. Des getters explicites peuvent être requis pour les types `array` et `mapping`. Ils ne sont pas générés automatiquement.
 
 
 ## Yul
 
-Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) entièrement écrit en **Yul**.
+Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) (🇬🇧) entièrement écrit en **Yul**.
 
 ```yul
 object "runtime" {
@@ -360,7 +385,7 @@ Réaliser un contrat **100% en Yul**, oblige à coder soi même le "function dis
 Seuil(s) pivot
 
 Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(n)** dans le cas critique où l'arbre est complètement déséquilibré et ressemble à une liste chaînée. Ce problème est écarté si l'arbre est équilibré par rotation au fur et à mesure des insertions pouvant créer des listes trop longues. 
-[Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche#Recherche)
+[Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche#Recherche) (🇫🇷)
 
 
 ## Conclusions
@@ -378,9 +403,34 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
   - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
   - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
   
-- Arbre binaire de recherche
-  - 🇫🇷 [Arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche)
-  - 🇬🇧 [Binary search tree - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_tree)
+<!-- TOC -->
+
+- [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
+	- [TL;DR](#tldr)
+	- [Présentation](#pr%C3%A9sentation)
+	- [Fonctionnement](#fonctionnement)
+	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
+	- [Solidity](#solidity)
+		- [Pour rappel](#pour-rappel)
+		- [À la compilation](#%C3%A0-la-compilation)
+			- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
+			- [Diagramme](#diagramme)
+			- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
+			- [getter automatique](#getter-automatique)
+	- [Yul](#yul)
+	- [Un exemple simple](#un-exemple-simple)
+	- [L'ordre de traitement](#lordre-de-traitement)
+		- [Recherche linéaire](#recherche-lin%C3%A9aire)
+		- [Recherche par dichotomie](#recherche-par-dichotomie)
+	- [Optimisations](#optimisations)
+		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
+		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
+	- [Conclusions](#conclusions)
+	- [Liens](#liens)
+
+<!-- /TOC -->
+<!-- /TOC -->
+<!-- /TOC -->
   
 - Rotation d'un arbre binaire de recherche
   - 🇫🇷 [Rotation d'un arbre binaire de recherche — Wikipédia](https://fr.wikipedia.org/wiki/Rotation_d%27un_arbre_binaire_de_recherche)
