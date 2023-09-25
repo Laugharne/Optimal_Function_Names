@@ -34,6 +34,7 @@
 - Le "function dispatcher" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
+- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'appel de ces dernières.
 
 
 ## Présentation du "function dispatcher"
@@ -460,6 +461,7 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 - Outils
   - 🇬🇧 [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
   - 🇬🇧 [Compiler Explorer](https://godbolt.org/)
+  - 🇬🇧 [Solidity Optimize Name](https://emn178.github.io/solidity-optimize-name/)
   - 🇬🇧 [Ethereum Signature Database](https://www.4byte.directory/)
 
 - Divers
