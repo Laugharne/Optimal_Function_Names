@@ -4,17 +4,18 @@
 
 - [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
 	- [TL;DR](#tldr)
-	- [Présentation](#pr%C3%A9sentation)
+	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
 	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
-	- [Solidity](#solidity)
-		- [Pour rappel](#pour-rappel)
-		- [À la compilation](#%C3%A0-la-compilation)
-			- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
-			- [Diagramme](#diagramme)
-			- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
-			- [getter automatique](#getter-automatique)
-	- [Yul](#yul)
+		- [En Solidity](#en-solidity)
+			- [Pour rappel](#pour-rappel)
+			- [À la compilation](#%C3%A0-la-compilation)
+				- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
+				- [Diagramme](#diagramme)
+				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
+				- [getter automatique](#getter-automatique)
+		- [En Yul](#en-yul)
+		- [En Huff](#en-huff)
 	- [Un exemple simple](#un-exemple-simple)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
@@ -35,7 +36,7 @@
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
 
 
-## Présentation
+## Présentation du "function dispatcher"
 
 Le "function dispatcher" (ou gestionnaire de fonctions) dans les contrats intelligents (*smart contracts*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
 
@@ -59,16 +60,16 @@ Le mécanisme de sélection est similaire, à un celui d'une structure `switch/c
 
 La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
 
-L'**empreinte** (selector dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
+L'**empreinte** ("selector" dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
 
-Je précise bien que je perle de l'empreinte pour **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
+Je précise bien que je parle de l'empreinte pour le compilateur **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
 
 Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
 
 Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
 
 
-## Solidity
+### En Solidity
 
 En mettant en application ce qui a été dit plus haut, on obtient, pour la fonction suivante :
 
@@ -92,7 +93,7 @@ En Solidity, le "function dispatcher" est généré par le compilateur, inutile 
 Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurrence les fonctions ayant pour attribut d'accès external et public
 
 
-### Pour rappel
+#### Pour rappel
 
 1. **External** : Les fonctions externes sont conçues pour être appelées depuis l'**extérieur du contrat**, généralement par d'autres contrats ou des comptes externes. C'est le niveau de visibilité que vous utilisez lorsque vous souhaitez exposer une interface publique à votre contrat.
 
@@ -100,7 +101,7 @@ Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur 
 
 3. **Internal** : Les fonctions internes peuvent être appelées à l'**intérieur du contrat**, ainsi que depuis d'autres **contrats héritant** du contrat actuel. Elles ne sont pas accessibles depuis l'extérieur du contrat via une transaction directe.
 
-Exemple :
+**Exemple #1** :
 
 ```solidity
 pragma solidity 0.8.20;
@@ -136,7 +137,7 @@ La fonction `setInternalValue` peut être appelée à partir de l'intérieur du 
 La fonction `getInternalValue` est publique et permet de lire la valeur de `internalValue`.
 
 
-### À la compilation
+#### À la compilation
 
 Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et empreintes suivantes :
 
@@ -154,9 +155,9 @@ Si on examine l'ABI généré lors de la compilation, la fonction `setInternalVa
 On notera dans les données de l'ABI, la référence à la donnée du storage `value` qui est `public` (on y reviendra plus loin)
 
 
-#### Code généré
+##### Code généré
 
-Voici le code du "function dispatcher" généré par le compilateur `solc` (version de solidity : 0.8.13)
+Voici en extrait le code du "function dispatcher" généré par le compilateur `solc` (version de solidity : 0.8.13)
 
 ```yul
 tag 1
@@ -198,14 +199,14 @@ tag 2
   REVERT
 ```
 
-#### Diagramme
+##### Diagramme
 
 Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade.
 
 ![](functions_dispatcher_diagram.png)
 
 
-#### Ordre d'évaluation
+##### Ordre d'évaluation
 
 **Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
 
@@ -221,9 +222,9 @@ En effet, les évaluations des empreintes de fonctions sont ordonnées par un tr
 `20965255` < `3FA4F245` < `55241077` < `E778DDC1`
 
 
-#### getter() automatique
+##### getter() automatique
 
-La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par la compilation.
+La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par le compilateur.
 
 ```solidity
   uint256 public value;
@@ -297,7 +298,7 @@ tag getValue_2
 
 Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
 
-**Pour info** : Pour ceux qui voudraient aller plus loin, voici [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity. On peut résumé le contenu de cet article en quatre points.
+Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity. Dont on peut résumé le contenu en quatre points essentiels.
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
@@ -308,7 +309,7 @@ Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `publ
 4. Des getters explicites peuvent être requis pour les types `array` et `mapping`. Ils ne sont pas générés automatiquement.
 
 
-## Yul
+### En Yul
 
 Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) (🇬🇧) entièrement écrit en **Yul**.
 
@@ -361,6 +362,10 @@ object "runtime" {
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
 Réaliser un contrat **100% en Yul**, oblige à coder soi même le "function dispatcher", ce qui implique que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
+
+
+### En Huff
+
 
 
 
