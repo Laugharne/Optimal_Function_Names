@@ -15,7 +15,6 @@
 				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
 				- [getter automatique](#getter-automatique)
 		- [En Yul](#en-yul)
-		- [En Huff](#en-huff)
 	- [Un exemple simple](#un-exemple-simple)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
@@ -364,12 +363,6 @@ object "runtime" {
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
 Réaliser un contrat **100% en Yul**, oblige à coder soi même le "function dispatcher", ce qui implique que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
-
-
-### En Huff
-
-
-
 
 
 ## Un exemple simple
