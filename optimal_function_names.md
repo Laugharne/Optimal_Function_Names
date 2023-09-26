@@ -8,17 +8,17 @@
 	- [Fonctionnement](#fonctionnement)
 	- [Idnetités et Signatures des fonctions](#idnetit%C3%A9s-et-signatures-des-fonctions)
 		- [En **Solidity**](#en-solidity)
-			- [Pour rappel](#pour-rappel)
+			- [Rappel sur les visibilités des fonctions Solidity](#rappel-sur-les-visibilit%C3%A9s-des-fonctions-solidity)
 			- [À la compilation](#%C3%A0-la-compilation)
 				- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
 				- [Diagramme](#diagramme)
 				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
 				- [getter automatique](#getter-automatique)
 		- [En **Yul**](#en-yul)
-	- [Un exemple simple](#un-exemple-simple)
+	- [Ça se complique !](#%C3%A7a-se-complique-)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
-		- [Recherche par dichotomie](#recherche-par-dichotomie)
+		- [Recherche "binaire"](#recherche-binaire)
 	- [Optimisations](#optimisations)
 		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
 		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
@@ -73,10 +73,10 @@ Cependant, le fait que l'on ne garde que **quatre octets** pour l'identité, imp
 
 Comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec l'exemple suivant :
 
-| Identités    | Signatures    |
-| --- | --- |
-| `0xcae9ca51`    | `onHintFinanceFlashloan(address,address,uint256,bool,bytes)`    |
-| `0xcae9ca51`    | `approveAndCall(address,uint256,bytes)`    |
+| Identités    | Signatures                                                   |
+| ------------ | ------------------------------------------------------------ |
+| `0xcae9ca51` | `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` |
+| `0xcae9ca51` | `approveAndCall(address,uint256,bytes)`                      |
 
 
 ### En **Solidity**
@@ -95,7 +95,7 @@ Les signature, hash et identité suivantes :
 | --------- | ------------------------------------------------------------------ |
 | Signature | `square(uint32)`                                                   |
 | Hash      | `d27b38416d4826614087db58e4ea90ac7199f7f89cb752950d00e21eb615e049` |
-| Identité | `d27b3841`                                                         |
+| Identité  | `d27b3841`                                                         |
 
 
 En Solidity, le "*function dispatcher*" est généré par le compilateur, inutile donc de se charger du codage de cette tâche complexe. 
@@ -103,7 +103,7 @@ En Solidity, le "*function dispatcher*" est généré par le compilateur, inutil
 Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurrence les fonctions ayant pour attribut d'accès external et public
 
 
-#### Pour rappel
+#### Rappel sur les visibilités des fonctions Solidity
 
 1. **External** : Les fonctions externes sont conçues pour être appelées depuis l'**extérieur du contrat**, généralement par d'autres contrats ou des comptes externes. C'est le niveau de visibilité que vous utilisez lorsque vous souhaitez exposer une interface publique à votre contrat.
 
@@ -114,7 +114,7 @@ Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur 
 **Exemple #1** :
 
 ```solidity
-pragma solidity 0.8.20;
+pragma solidity 0.8.13;
 
 contract MyContract {
     uint256 public value;
@@ -151,7 +151,7 @@ La fonction `getInternalValue` est publique et permet de lire la valeur de `inte
 
 Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et Identités suivantes :
 
-| Fonctions                                              | Signatures                  | Keccak            | Identités     |
+| Fonctions                                              | Signatures                  | Keccak            | Identités      |
 | ------------------------------------------------------ | --------------------------- | ----------------- | -------------- |
 | **`setValue(uint256 _newValue) external`**             | `setValue(uint256)`         | `55241077...ecbd` | **`55241077`** |
 | **`getValue() public view returns (uint256)`**         | `getValue()`                | `20965255...ad96` | **`20965255`** |
@@ -214,6 +214,7 @@ tag 2
 Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade.
 
 ![](functions_dispatcher_diagram.png)
+<!-- ![](functions_dispatcher_diagram.svg) -->
 
 
 ##### Ordre d'évaluation
@@ -221,11 +222,11 @@ Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en
 **Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
 
 | Ordre d'évaluation | Ordre dans le code | Identités | Signatures                   |
-| ------------------ | ------------------ | ---------- | ---------------------------- |
-| 1                  | **3**              | 20965255   | getValue()                   |
-| 2                  | **1**              | 3FA4F245   | value (*getter automatique*) |
-| 3                  | **2**              | 55241077   | setValue(uint256)            |
-| 4                  | **4**              | E778DDC1   | getInternalValue()           |
+| ------------------ | ------------------ | --------- | ---------------------------- |
+| 1                  | **3**              | 20965255  | getValue()                   |
+| 2                  | **1**              | 3FA4F245  | value (*getter automatique*) |
+| 3                  | **2**              | 55241077  | setValue(uint256)            |
+| 4                  | **4**              | E778DDC1  | getInternalValue()           |
 
 En effet, les évaluations des Identités de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
 
@@ -371,19 +372,94 @@ object "runtime" {
 
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
-Réaliser un contrat **100% en Yul**, oblige à coder soi même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
+Réaliser un contrat **100% en Yul**, oblige à coder soi même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithmes qu'une simple suite de tests en cascade.
 
 
-## Un exemple simple
+## Ça se complique !
 
+Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes en fonction du **nombre de fonctions** et du niveau d'**optimisation** du **compilateur** Solidity (voir : `--optimize-runs`) !
+
+**Exemple #1** :
+
+```solidity
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity 0.8.17;
+
+contract Storage {
+
+    uint256 numberA;
+    uint256 numberB;
+    uint256 numberC;
+    uint256 numberD;
+    uint256 numberE;
+
+
+    // identity : C534BE7A
+    function storeA(uint256 num) public {
+        numberA = num;
+    }
+
+    // identity : 9AE4B7D0
+    function storeB(uint256 num) public {
+        numberB = num;
+    }
+
+    // identity : 4CF56E0C
+    function storeC(uint256 num) public {
+        numberC = num;
+    }
+
+    // identity : B87C712B
+    function storeD(uint256 num) public {
+        numberD = num;
+    }
+
+    // identity : E45F4CF5
+    function storeE(uint256 num) public {
+        numberE = num;
+    }
+
+    // identity : 2E64CEC1
+    function retrieve() public view returns (uint256) {
+        return Multiply( numberA, numberB, numberC, numberD);
+    }
+
+
+    function Multiply(uint a, uint b, uint c, uint d) pure private returns(uint256) {
+        return a * b * c * d;
+    }
+
+    function MultiplyBis(uint a, uint b, uint c, uint d) pure private returns(uint256) {
+        return a * b * c * d;
+    }
+
+}
+```
+Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les 6 fonctions public suivantes avec leur identités dédiées :
+
+| Fonctions                                      | Signatures        | Identités      |
+| ---------------------------------------------- | ----------------- | -------------- |
+| **`storeA(uint256 num) public`**               | `storeA(uint256)` | **`C534BE7A`** |
+| **`storeB(uint256 num) public`**               | `storeB(uint256)` | **`9AE4B7D0`** |
+| **`storeC(uint256 num) public`**               | `storeC(uint256)` | **`4CF56E0C`** |
+| **`storeD(uint256 num) public`**               | `storeD(uint256)` | **`B87C712B`** |
+| **`storeE(uint256 num) public`**               | `storeE(uint256)` | **`E45F4CF5`** |
+| **`retrieve() public view returns (uint256)`** | `retrieve()`      | **`2E64CEC1`** |
+
+Suivant le niveau d'optimisation (`--optimize-runs`) du compilateur, nous obtenons un code différent pour le "*function dispatcher*"
 
 ## L'ordre de traitement
+
 - Ordre des fonctions dans le code source
 - Ordonnancé par la valeur de hash
 
+
 ### Recherche linéaire
 
-### Recherche par dichotomie
+
+### Recherche "binaire"
+
 
 ## Optimisations
 
