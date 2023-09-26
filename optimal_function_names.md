@@ -4,17 +4,17 @@
 
 - [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
 	- [TL;DR](#tldr)
-	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
+	- [Présentation du "*function dispatcher*"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
-	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
-		- [En Solidity](#en-solidity)
+	- [Idnetités et Signatures des fonctions](#idnetit%C3%A9s-et-signatures-des-fonctions)
+		- [En **Solidity**](#en-solidity)
 			- [Pour rappel](#pour-rappel)
 			- [À la compilation](#%C3%A0-la-compilation)
 				- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
 				- [Diagramme](#diagramme)
 				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
 				- [getter automatique](#getter-automatique)
-		- [En Yul](#en-yul)
+		- [En **Yul**](#en-yul)
 	- [Un exemple simple](#un-exemple-simple)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
@@ -30,47 +30,53 @@
 
 ## TL;DR
 
-- Le "function dispatcher" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
+- Le "*function dispatcher*" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
 - Coder en Yul, résout la problématique de l'odonnancement.
 - Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'appel de ces dernières.
 
 
-## Présentation du "function dispatcher"
+## Présentation du "*function dispatcher*"
 
-Le "function dispatcher" (ou gestionnaire de fonctions) dans les contrats intelligents (*smart contracts*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
+Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les contrats intelligents (*smart contracts*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
 
 Si on imagine un contrat intelligent comme une boîte noire avec des fonctions à l'intérieur.  Ces fonctions peuvent être comme des commandes que vous pouvez donner à la boîte pour lui faire faire différentes choses.
 
-Le "function dispatcher" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.
+Le "*function dispatcher*" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.
 
-Lorsque vous interagissez avec un contrat intelligent en utilisant une application ou une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "function dispatcher" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
+Lorsque vous interagissez avec un contrat intelligent en utilisant une application ou une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
 
-En résumé, le "function dispatcher" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
+En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
 
 
 ## Fonctionnement
 
-Lors d'un appel à une fonction d'un smart contract, le "function dispatcher" récupère l'empreinte dans le `calldata` produit un `revert` si l'appel ne peut être mis en relation avec une fonction du contrat.
+Lors d'un appel à une fonction d'un smart contract, le "*function dispatcher*" récupère l'identité dans le `calldata` produit un `revert` si l'appel ne peut être mis en relation avec une fonction du contrat.
 
 Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else` tel qu'on le trouve dans de nombreux autres langages de programmation.
 
 
-## Empreintes et Signatures des fonctions
+## Idnetités et Signatures des fonctions
 
 La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses paramètres (sans noms de paramètre, sans type de retour et sans espace)
 
-L'**empreinte** ("selector" dans certaines publications anglo-saxonnes) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧). Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
+L'**identité** (*"selector" dans certaines publications anglo-saxonnes*) est l'identité même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧).
 
-Je précise bien que je parle de l'empreinte pour le compilateur **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
+Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
+
+Je précise bien que je parle de l'identité pour le compilateur **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
 
 Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
 
-Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` et `approveAndCall(address,uint256,bytes)` !
+Cependant, le fait que l'on ne garde que **quatre octets** pour l'identité, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32) comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec l'exemple suivant :
+| Identités    | Signatures    |
+| --- | --- |
+| `0xcae9ca51`    | `onHintFinanceFlashloan(address,address,uint256,bool,bytes)`    |
+| `0xcae9ca51`    | `approveAndCall(address,uint256,bytes)`    |
 
 
-### En Solidity
+### En **Solidity**
 
 En mettant en application ce qui a été dit plus haut, on obtient, pour la fonction suivante :
 
@@ -80,16 +86,16 @@ function square(uint32 num) public pure returns (uint32) {
 }
 ```
 
-Les signatures, hash et empreinte suivantes :
+Les signature, hash et identité suivantes :
 
 | Fonction  | square(uint32 num) public pure returns (uint32)                    |
 | --------- | ------------------------------------------------------------------ |
 | Signature | `square(uint32)`                                                   |
 | Hash      | `d27b38416d4826614087db58e4ea90ac7199f7f89cb752950d00e21eb615e049` |
-| Empreinte | `d27b3841`                                                         |
+| Identité | `d27b3841`                                                         |
 
 
-En Solidity, le "function dispatcher" est généré par le compilateur, inutile donc de se charger du codage de cette tâche complexe. 
+En Solidity, le "*function dispatcher*" est généré par le compilateur, inutile donc de se charger du codage de cette tâche complexe. 
 
 Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur de celui-ci, en l'occurrence les fonctions ayant pour attribut d'accès external et public
 
@@ -140,9 +146,9 @@ La fonction `getInternalValue` est publique et permet de lire la valeur de `inte
 
 #### À la compilation
 
-Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et empreintes suivantes :
+Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et Identités suivantes :
 
-| Fonctions                                              | Signatures                  | Keccak            | Empreintes     |
+| Fonctions                                              | Signatures                  | Keccak            | Identités     |
 | ------------------------------------------------------ | --------------------------- | ----------------- | -------------- |
 | **`setValue(uint256 _newValue) external`**             | `setValue(uint256)`         | `55241077...ecbd` | **`55241077`** |
 | **`getValue() public view returns (uint256)`**         | `getValue()`                | `20965255...ad96` | **`20965255`** |
@@ -158,7 +164,7 @@ On notera dans les données de l'ABI, la référence à la donnée du storage `v
 
 ##### Code généré
 
-Voici en extrait le code du "function dispatcher" généré par le compilateur `solc` (version de solidity : 0.8.13)
+Voici en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de solidity : 0.8.13)
 
 ```yul
 tag 1
@@ -211,27 +217,27 @@ Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en
 
 **Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
 
-| Ordre d'évaluation | Ordre dans le code | Empreintes | Signatures                   |
+| Ordre d'évaluation | Ordre dans le code | Identités | Signatures                   |
 | ------------------ | ------------------ | ---------- | ---------------------------- |
 | 1                  | **3**              | 20965255   | getValue()                   |
 | 2                  | **1**              | 3FA4F245   | value (*getter automatique*) |
 | 3                  | **2**              | 55241077   | setValue(uint256)            |
 | 4                  | **4**              | E778DDC1   | getInternalValue()           |
 
-En effet, les évaluations des empreintes de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
+En effet, les évaluations des Identités de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
 
 `20965255` < `3FA4F245` < `55241077` < `E778DDC1`
 
 
 ##### getter() automatique
 
-La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par le compilateur.
+La fonction d'identité `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par le compilateur.
 
 ```solidity
   uint256 public value;
 ```
 
-Nous retrouvons d'ailleurs dans les opcodes, l'empreinte de sélection (`3FA4F245`) et la fonction (à l'adresse `tag 4`) du getter automatique pour cette variable.
+Nous retrouvons d'ailleurs dans les opcodes, l'identité de sélection (`3FA4F245`) et la fonction (à l'adresse `tag 4`) du getter automatique pour cette variable.
 
 **Sélecteur** :
 ```yul
@@ -310,7 +316,7 @@ Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un articl
 4. Des getters explicites peuvent être requis pour les types `array` et `mapping`. Ils ne sont pas générés automatiquement.
 
 
-### En Yul
+### En **Yul**
 
 Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) (🇬🇧) entièrement écrit en **Yul**.
 
@@ -362,7 +368,7 @@ object "runtime" {
 
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
-Réaliser un contrat **100% en Yul**, oblige à coder soi même le "function dispatcher", ce qui implique que l'on peut choisir l'ordre de traitement des empreintes, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
+Réaliser un contrat **100% en Yul**, oblige à coder soi même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithme qu'une simple suite de tests.
 
 
 ## Un exemple simple
@@ -390,7 +396,7 @@ Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(
 
 ## Conclusions
 
-Le "function dispatcher" est ainsi le reflet de l'ABI.
+Le "*function dispatcher*" est ainsi le reflet de l'ABI.
 
 L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques)
 
