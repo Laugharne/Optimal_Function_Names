@@ -447,7 +447,58 @@ Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les 6 fonctions pu
 | **`storeE(uint256 num) public`**               | `storeE(uint256)` | **`E45F4CF5`** |
 | **`retrieve() public view returns (uint256)`** | `retrieve()`      | **`2E64CEC1`** |
 
-Suivant le niveau d'optimisation (`--optimize-runs`) du compilateur, nous obtenons un code différent pour le "*function dispatcher*"
+Suivant le  [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/internals/optimizer.html) (🇬🇧) du compilateur, nous obtenons un code différent pour le "*function dispatcher*".
+
+Avec un niveau à **200** (*`--optimize-runs 200`*) nous obtenons le type de code précédement généré, avec ses `if/else` en cascade.
+
+```yul
+tag 1
+  JUMPDEST 
+  POP 
+  PUSH 4
+  CALLDATASIZE 
+  LT 
+  PUSH [tag] 2
+  JUMPI 
+  PUSH 0
+  CALLDATALOAD 
+  PUSH E0
+  SHR 
+  DUP1 
+  PUSH 2E64CEC1
+  EQ 
+  PUSH [tag] retrieve_0
+  JUMPI 
+  DUP1 
+  PUSH 4CF56E0C
+  EQ 
+  PUSH [tag] storeC_uint256_0
+  JUMPI 
+  DUP1 
+  PUSH 9AE4B7D0
+  EQ 
+  PUSH [tag] storeB_uint256_0
+  JUMPI 
+  DUP1 
+  PUSH B87C712B
+  EQ 
+  PUSH [tag] storeD_uint256_0
+  JUMPI 
+  DUP1 
+  PUSH C534BE7A
+  EQ 
+  PUSH [tag] storeA_uint256_0
+  JUMPI 
+  DUP1 
+  PUSH E45F4CF5
+  EQ 
+  PUSH [tag] storeE_uint256_0
+  JUMPI 
+```
+
+Par contre avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
+
+
 
 ## L'ordre de traitement
 
@@ -502,6 +553,7 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
   - 🇬🇧 [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
   - 🇬🇧 [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
   - 🇬🇧 [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
+  - 🇬🇧 [The Optimizer — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/internals/optimizer.html)
 
 - Outils
   - 🇬🇧 [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
