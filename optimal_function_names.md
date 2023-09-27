@@ -447,7 +447,7 @@ Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les 6 fonctions pu
 | **`storeE(uint256 num) public`**               | `storeE(uint256)` | **`E45F4CF5`** |
 | **`retrieve() public view returns (uint256)`** | `retrieve()`      | **`2E64CEC1`** |
 
-Suivant le  [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/internals/optimizer.html) (🇬🇧) du compilateur, nous obtenons un code différent pour le "*function dispatcher*".
+Suivant le [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/internals/optimizer.html) (🇬🇧) du compilateur, nous obtenons un code différent pour le "*function dispatcher*".
 
 Avec un niveau à **200** (*`--optimize-runs 200`*) nous obtenons le type de code précédement généré, avec ses `if/else` en cascade.
 
@@ -497,6 +497,9 @@ tag 1
 ```
 
 Par contre avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
+
+- Ce niveau d'optimisation est malheureusement un peu empirique (runs >= 285)
+- Est-t'il susceptible d'évoluer au fil des versions de `solc` ?
 
 
 
@@ -553,6 +556,7 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
   - 🇬🇧 [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
   - 🇬🇧 [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
   - 🇬🇧 [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
+  - 🇬🇧 [Using the Compiler — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/using-the-compiler.html)
   - 🇬🇧 [The Optimizer — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/internals/optimizer.html)
 
 - Outils
