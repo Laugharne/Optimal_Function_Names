@@ -494,12 +494,86 @@ tag 1
   EQ 
   PUSH [tag] storeE_uint256_0
   JUMPI 
+  PUSH 0
+  DUP1
+  REVERT
 ```
 
 Par contre avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
 
-- Ce niveau d'optimisation est malheureusement un peu empirique (runs >= 285)
-- Est-t'il susceptible d'évoluer au fil des versions de `solc` ?
+```yul
+tag 1
+  JUMPDEST
+  POP
+  PUSH 4
+  CALLDATASIZE
+  LT
+  PUSH [tag] 2
+  JUMPI
+  PUSH 0
+  CALLDATALOAD
+  PUSH E0
+  SHR
+  DUP1
+  PUSH B87C712B
+  GT
+  PUSH [tag] 9
+  JUMPI
+  DUP1
+  PUSH B87C712B
+  EQ
+  PUSH [tag] storeD_uint256_0
+  JUMPI
+  DUP1
+  PUSH C534BE7A
+  EQ
+  PUSH [tag] storeA_uint256_0
+  JUMPI
+  DUP1
+  PUSH E45F4CF5
+  EQ
+  PUSH [tag] storeE_uint256_0
+  JUMPI
+  PUSH 0
+  DUP1
+  REVERT
+tag 9
+  JUMPDEST
+  DUP1
+  PUSH 2E64CEC1
+  EQ
+  PUSH [tag] retrieve_0
+  JUMPI
+  DUP1
+  PUSH 4CF56E0C
+  EQ
+  PUSH [tag] storeC_uint256_0
+  JUMPI
+  DUP1
+  PUSH 9AE4B7D0
+  EQ
+  PUSH [tag] storeB_uint256_0
+  JUMPI
+tag 2
+  JUMPDEST
+  PUSH 0
+  DUP1
+  REVERT
+```
+
+Le flux d'exécution, n'est plus le même.
+
+![](functions_split_dispatcher_diagram.png)
+
+On voit que les test sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. diminuant ainsi par deux le cout pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
+
+Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précedent algorithme.
+
+
+
+- La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284` (deux tranches de 3 séries de tests linéaires).
+- Avec 11 fonctions éligibles, un niveau de runs encore différents `--optimize-runs 1000`  permet de passer de deux tranches (une de 6 + une de 5) à 4 tranches (trois tranches de 3 + une de 2)
+- Ces seuils sont-t'il susceptibles d'évoluer au fil des versions de `solc` ?
 
 
 
