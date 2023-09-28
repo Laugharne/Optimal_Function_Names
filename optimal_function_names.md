@@ -587,7 +587,7 @@ Ces seuils (valeur de `runs`) sont-t'il susceptibles d'évoluer au fil des versi
 ```c
 // [tag 1]
 // 1 Gas (JUMPDEST)
-if( selector > 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
+if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
   if( selector >= 0xB9E9C35C) {  // 22 = (3+3+3+3+10) Gas
     if( selector == 0xB9E9C35C) { goto storeF }  // 22 = (3+3+3+3+10) Gas
     if( selector == 0xC534BE7A) { goto storeA }  // 22 = (3+3+3+3+10) Gas
@@ -626,38 +626,32 @@ if( selector > 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 
 [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
-| Mnemonic           | Gas | Description                       |
-| ------------------ | --- | --------------------------------- |
-| `JUMPDEST`         | 1   | Mark valid jump destination.      |
-| `DUP1`             | 3   | Clone 1st value on stack          |
-| `PUSH4 0xXXXXXXXX` | 3   | Push 4-byte value onto stack.     |
-| `GT`               | 3   | Greater-than comparison.          |
-| `EQ`               | 3   | Equality comparison.              |
-| `PUSH [tag]`       | 3   |                                   |
-| `JUMPI`            | 10  | $pc := condition ? dst : $pc + 1. |
-
-
-
-
-
+| Mnemonic           | Gas | Description                             |
+| ------------------ | --- | --------------------------------------- |
+| `JUMPDEST`         | 1   | Mark valid jump destination.            |
+| `DUP1`             | 3   | Clone 1st value on stack                |
+| `PUSH4 0xXXXXXXXX` | 3   | Push 4-byte value onto stack.           |
+| `GT`               | 3   | Greater-than comparison.                |
+| `EQ`               | 3   | Equality comparison.                    |
+| `PUSH [tag]`       | 3   | Push 2-byte value onto stack.           |
+| `JUMPI`            | 10  | Conditionally alter the program counter |
 
 | #      | Signature       | Identité         | Gas (linear) | Gas (binary) |
 | ------ | --------------- | ---------------- | ------------ | ------------ |
-| **1**  | storeI(uint256) | `183301E7`       |              | 69           |
-| **2**  | retrieve()      | `2E64CEC1`       |              | 91           |
-| **3**  | storeC(uint256) | `4CF56E0C` (*2*) |              | 69           |
-| **4**  | storeJ(uint256) | `6EC51CF6`       |              | 90           |
-| **5**  | storeH(uint256) | `75A64B6D`       |              | 112          |
-| **6**  | storeG(uint256) | `799EBD70` (*1*) |              |              |
-| **7**  | storeB(uint256) | `9AE4B7D0`       |              |              |
-| **8**  | storeD(uint256) | `B87C712B`       |              |              |
-| **9**  | storeF(uint256) | `B9E9C35C` (*2*) |              |              |
-| **10** | storeA(uint256) | `C534BE7A`       |              |              |
-| **11** | storeE(uint256) | `E45F4CF5`       |              |              |
+| **1**  | storeI(uint256) | `183301E7`       | **22**       | 69           |
+| **2**  | retrieve()      | `2E64CEC1`       | 22           | 91           |
+| **3**  | storeC(uint256) | `4CF56E0C` (*2*) | 66           | 69           |
+| **4**  | storeJ(uint256) | `6EC51CF6`       | 88           | 90           |
+| **5**  | storeH(uint256) | `75A64B6D`       | 110          | 112          |
+| **6**  | storeG(uint256) | `799EBD70` (*1*) | 132          | 68           |
+| **7**  | storeB(uint256) | `9AE4B7D0`       | 154          | 90           |
+| **8**  | storeD(uint256) | `B87C712B`       | 176          | 112          |
+| **9**  | storeF(uint256) | `B9E9C35C` (*2*) | 198          | **67**       |
+| **10** | storeA(uint256) | `C534BE7A`       | 220          | 89           |
+| **11** | storeE(uint256) | `E45F4CF5`       | 242          | 111          |
 
 - (*1*) : *premier seuil*
 - (*2*) : *seuils secondaires*
-
 
 
 
