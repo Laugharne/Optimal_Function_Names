@@ -636,24 +636,32 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 | `PUSH [tag]`       | 3   | Push 2-byte value onto stack.           |
 | `JUMPI`            | 10  | Conditionally alter the program counter |
 
-| #      | Signature       | Identité         | Gas (linear) | Gas (binary) |
-| ------ | --------------- | ---------------- | ------------ | ------------ |
-| **1**  | storeI(uint256) | `183301E7`       | **22**       | 69           |
-| **2**  | retrieve()      | `2E64CEC1`       | 22           | 91           |
-| **3**  | storeC(uint256) | `4CF56E0C` (*2*) | 66           | 69           |
-| **4**  | storeJ(uint256) | `6EC51CF6`       | 88           | 90           |
-| **5**  | storeH(uint256) | `75A64B6D`       | 110          | 112          |
-| **6**  | storeG(uint256) | `799EBD70` (*1*) | 132          | 68           |
-| **7**  | storeB(uint256) | `9AE4B7D0`       | 154          | 90           |
-| **8**  | storeD(uint256) | `B87C712B`       | 176          | 112          |
-| **9**  | storeF(uint256) | `B9E9C35C` (*2*) | 198          | **67**       |
-| **10** | storeA(uint256) | `C534BE7A`       | 220          | 89           |
-| **11** | storeE(uint256) | `E45F4CF5`       | 242          | 111          |
+| #      | Signature         | Identité         | Gas (linear)    | Gas (binary)    |
+| ------ | ----------------- | ---------------- | --------------- | --------------- |
+| **1**  | `storeI(uint256)` | `183301E7`       | **22 (*min*)**  | 69              |
+| **2**  | `retrieve()`      | `2E64CEC1`       | 44              | 91              |
+| **3**  | `storeC(uint256)` | `4CF56E0C` (*2*) | 66              | 69              |
+| **4**  | `storeJ(uint256)` | `6EC51CF6`       | 88              | 90              |
+| **5**  | `storeH(uint256)` | `75A64B6D`       | 110             | **112 (*max*)** |
+| **6**  | `storeG(uint256)` | `799EBD70` (*1*) | 132             | 68              |
+| **7**  | `storeB(uint256)` | `9AE4B7D0`       | 154             | 90              |
+| **8**  | `storeD(uint256)` | `B87C712B`       | 176             | **112 (*max*)** |
+| **9**  | `storeF(uint256)` | `B9E9C35C` (*2*) | 198             | **67 (*min*)**  |
+| **10** | `storeA(uint256)` | `C534BE7A`       | 220             | 89              |
+| **11** | `storeE(uint256)` | `E45F4CF5`       | **242 (*max*)** | 111             |
 
 - (*1*) : *premier seuil*
 - (*2*) : *seuils secondaires*
 
+| \          | Linear | Binay |
+| ---------- | ------ | ----- |
+| Min        | 22     | 67    |
+| Max        | 242    | 112   |
+| Moyenne    | 132    | 88    |
+| Ecart type | 72,97  | 18,06 |
 
+
+Moyenne plus basse (-xx%) et une dispersion des consommations significativement plus faible.
 
 ## L'ordre de traitement
 
