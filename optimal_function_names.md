@@ -18,7 +18,8 @@
 	- [Ça se complique !](#%C3%A7a-se-complique-)
 		- [Seuils](#seuils)
 		- [Pseudo-code](#pseudo-code)
-		- [Cout en gas](#cout-en-gas)
+		- [Calculs des couts en gas](#calculs-des-couts-en-gas)
+		- [Statistiques de consommation](#statistiques-de-consommation)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
 		- [Recherche "binaire"](#recherche-binaire)
@@ -616,15 +617,17 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
   revert()
 }
 ```
-### Cout en gas
 
-[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+
+### Calculs des couts en gas
 
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
-[**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
+A l'aide de :
+- [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+- [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
 | Mnemonic           | Gas | Description                             |
 | ------------------ | --- | --------------------------------------- |
@@ -653,6 +656,9 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 - (*1*) : *premier seuil*
 - (*2*) : *seuils secondaires*
 
+
+### Statistiques de consommation
+
 | \          | Linear | Binay |
 | ---------- | ------ | ----- |
 | Min        | 22     | 67    |
@@ -660,8 +666,8 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 | Moyenne    | 132    | 88    |
 | Ecart type | 72,97  | 18,06 |
 
+**Moyenne** plus basse (*-33%*) et une **dispersion** des consommations significativement plus faible (*4 fois moins*)
 
-Moyenne plus basse (-xx%) et une dispersion des consommations significativement plus faible.
 
 ## L'ordre de traitement
 
