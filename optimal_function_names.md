@@ -16,6 +16,9 @@
 				- [getter automatique](#getter-automatique)
 		- [En **Yul**](#en-yul)
 	- [Ça se complique !](#%C3%A7a-se-complique-)
+		- [Seuils](#seuils)
+		- [Pseudo-code](#pseudo-code)
+		- [Cout en gas](#cout-en-gas)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
 		- [Recherche "binaire"](#recherche-binaire)
@@ -567,13 +570,94 @@ Le flux d'exécution, n'est plus le même.
 
 On voit que les test sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. diminuant ainsi par deux le cout pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
 
+
+### Seuils
+
 Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précedent algorithme.
 
+La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
+
+Avec 11 fonctions éligibles, un niveau de runs encore différents `--optimize-runs 1000`  permet de passer de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
+
+Ces seuils (valeur de `runs`) sont-t'il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
 
 
-- La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284` (deux tranches de 3 séries de tests linéaires).
-- Avec 11 fonctions éligibles, un niveau de runs encore différents `--optimize-runs 1000`  permet de passer de deux tranches (une de 6 + une de 5) à 4 tranches (trois tranches de 3 + une de 2)
-- Ces seuils sont-t'il susceptibles d'évoluer au fil des versions de `solc` ?
+### Pseudo-code
+
+```c
+// [tag 1]
+// 1 Gas (JUMPDEST)
+if( selector > 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
+  if( selector >= 0xB9E9C35C) {  // 22 = (3+3+3+3+10) Gas
+    if( selector == 0xB9E9C35C) { goto storeF }  // 22 = (3+3+3+3+10) Gas
+    if( selector == 0xC534BE7A) { goto storeA }  // 22 = (3+3+3+3+10) Gas
+    if( selector == 0xE45F4CF5) { goto storeE }  // 22 = (3+3+3+3+10) Gas
+    revert()
+  }
+  // [tag 15]
+  // 1 Gas (JUMPDEST)
+  if( selector == 0x799EBD70) { goto storeG }  // 22 = (3+3+3+3+10) Gas
+  if( selector == 0x9AE4B7D0) { goto storeB }  // 22 = (3+3+3+3+10) Gas
+  if( selector == 0xB87C712B) { goto storeD }  // 22 = (3+3+3+3+10) Gas
+  revert()
+} else {
+  // [tag 14]
+  // 1 Gas (JUMPDEST)
+  if( selector >= 0x4CF56E0C) { // 22 = (3+3+3+3+10) Gas
+    if( selector == 0x4CF56E0C) { goto storeC }  // 22 = (3+3+3+3+10) Gas
+    if( selector == 0x6EC51CF6) { goto storeJ }  // 22 = (3+3+3+3+10) Gas
+    if( selector == 0x75A64B6D) { goto storeH }  // 22 = (3+3+3+3+10) Gas
+    revert()
+  }
+  // [tag 16]
+  // 1 Gas (JUMPDEST)
+  if( selector == 0x183301E7) { goto storeI }    // 22 = (3+3+3+3+10) Gas
+  if( selector == 0x2E64CEC1) { goto retrieve }  // 22 = (3+3+3+3+10) Gas
+  revert()
+}
+```
+### Cout en gas
+
+[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+
+- On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
+
+- De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
+
+[**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
+
+| Mnemonic           | Gas | Description                       |
+| ------------------ | --- | --------------------------------- |
+| `JUMPDEST`         | 1   | Mark valid jump destination.      |
+| `DUP1`             | 3   | Clone 1st value on stack          |
+| `PUSH4 0xXXXXXXXX` | 3   | Push 4-byte value onto stack.     |
+| `GT`               | 3   | Greater-than comparison.          |
+| `EQ`               | 3   | Equality comparison.              |
+| `PUSH [tag]`       | 3   |                                   |
+| `JUMPI`            | 10  | $pc := condition ? dst : $pc + 1. |
+
+
+
+
+
+
+| #      | Signature       | Identité         | Gas (linear) | Gas (binary) |
+| ------ | --------------- | ---------------- | ------------ | ------------ |
+| **1**  | storeI(uint256) | `183301E7`       |              | 69           |
+| **2**  | retrieve()      | `2E64CEC1`       |              | 91           |
+| **3**  | storeC(uint256) | `4CF56E0C` (*2*) |              | 69           |
+| **4**  | storeJ(uint256) | `6EC51CF6`       |              | 90           |
+| **5**  | storeH(uint256) | `75A64B6D`       |              | 112          |
+| **6**  | storeG(uint256) | `799EBD70` (*1*) |              |              |
+| **7**  | storeB(uint256) | `9AE4B7D0`       |              |              |
+| **8**  | storeD(uint256) | `B87C712B`       |              |              |
+| **9**  | storeF(uint256) | `B9E9C35C` (*2*) |              |              |
+| **10** | storeA(uint256) | `C534BE7A`       |              |              |
+| **11** | storeE(uint256) | `E45F4CF5`       |              |              |
+
+- (*1*) : *premier seuil*
+- (*2*) : *seuils secondaires*
+
 
 
 
@@ -627,6 +711,9 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 
 - Reférences
   - 🇬🇧 [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
+  - 🇬🇧 [Opcodes for the EVM](https://ethereum.org/en/developers/docs/evm/opcodes/)
+  - 🇬🇧 [EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference](https://www.evm.codes/?fork=shanghai)
+  - 🇬🇧 [Operations with dynamic gas costs](https://github.com/wolflo/evm-opcodes/blob/main/gas.md)
   - 🇬🇧 [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
   - 🇬🇧 [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
   - 🇬🇧 [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
