@@ -4,28 +4,28 @@
 
 - [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
 	- [TL;DR](#tldr)
-	- [Présentation du "*function dispatcher*"](#pr%C3%A9sentation-du-function-dispatcher)
+	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
 	- [Idnetités et Signatures des fonctions](#idnetit%C3%A9s-et-signatures-des-fonctions)
-		- [En **Solidity**](#en-solidity)
+		- [En Solidity](#en-solidity)
 			- [Rappel sur les visibilités des fonctions Solidity](#rappel-sur-les-visibilit%C3%A9s-des-fonctions-solidity)
 			- [À la compilation](#%C3%A0-la-compilation)
 				- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
 				- [Diagramme](#diagramme)
 				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
 				- [getter automatique](#getter-automatique)
-		- [En **Yul**](#en-yul)
+		- [En Yul](#en-yul)
 	- [Ça se complique !](#%C3%A7a-se-complique-)
 		- [Seuils](#seuils)
 		- [Pseudo-code](#pseudo-code)
-		- [Calculs des couts en gas](#calculs-des-couts-en-gas)
+		- [Calcul des couts en gas](#calcul-des-couts-en-gas)
 		- [Statistiques de consommation](#statistiques-de-consommation)
 	- [L'ordre de traitement](#lordre-de-traitement)
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
 		- [Recherche "binaire"](#recherche-binaire)
 	- [Optimisations](#optimisations)
-		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
 		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
+		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
 	- [Conclusions](#conclusions)
 	- [Liens](#liens)
 
@@ -41,7 +41,7 @@
 - Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'appel de ces dernières.
 
 
-## Présentation du "*function dispatcher*"
+## Présentation du "function dispatcher"
 
 Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les contrats intelligents (*smart contracts*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une API.
 
@@ -83,7 +83,7 @@ Comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.dir
 | `0xcae9ca51` | `approveAndCall(address,uint256,bytes)`                      |
 
 
-### En **Solidity**
+### En Solidity
 
 En mettant en application ce qui a été dit plus haut, on obtient, pour la fonction suivante :
 
@@ -218,7 +218,7 @@ tag 2
 Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade.
 
 ![](functions_dispatcher_diagram.png)
-![](functions_dispatcher_diagram.svg)
+<!-- ![](functions_dispatcher_diagram.svg) -->
 
 
 ##### Ordre d'évaluation
@@ -324,7 +324,7 @@ Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un articl
 4. Des getters explicites peuvent être requis pour les types `array` et `mapping`. Ils ne sont pas générés automatiquement.
 
 
-### En **Yul**
+### En Yul
 
 Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) (🇬🇧) entièrement écrit en **Yul**.
 
@@ -576,9 +576,9 @@ On voit que les test sont "découpés" en deux recherches linéaires autour d'un
 
 Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précedent algorithme.
 
-La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
+La détermination du déclenchement de ce type d'optimisation est un peu délicat à obtenir, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
 
-Avec 11 fonctions éligibles, un niveau de runs encore différents `--optimize-runs 1000`  permet de passer de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
+Avec **11 fonctions** éligibles, et un niveau de runs encore différents `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
 
 Ces seuils (valeur de `runs`) sont-t'il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
 
@@ -619,22 +619,22 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 ```
 
 
-### Calculs des couts en gas
+### Calcul des couts en gas
 
-J'ai pris pour reférence un code avec 11 fonctions éligibles au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
+J'ai pris pour reférence le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
 
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
-- C'est uniquement le cout de la sélection dans le "*function dispatcher*" et non l'éxécution des fonctions qui est estimé, peut importe donc ce que fait la fonction.
+- C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'éxécution des fonctions qui est estimé, et non ce que fait la fonction et ce qu'elle consomme comme Gas.
 
 Les couts en Gas des opcodes utilisés, ont été réalisé en m'aidant de des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
 
-Les **opcodes** en jeu, sont les suivants :
+Les **opcodes** en jeu, sont ainsi les suivants :
 
 | Mnemonic           | Gas | Description                             |
 | ------------------ | --- | --------------------------------------- |
@@ -646,6 +646,8 @@ Les **opcodes** en jeu, sont les suivants :
 | `PUSH [tag]`       | 3   | Push 2-byte value onto stack.           |
 | `JUMPI`            | 10  | Conditionally alter the program counter |
 
+
+Ce qui m'a permit d'estimer les couts en Gas de recherche de chaque fonction, selon l'algorithme.
 
 | Signatures        | Identités        | Gas (linear)    | Gas (binary)    |
 | ----------------- | ---------------- | --------------- | --------------- |
@@ -667,17 +669,23 @@ Les **opcodes** en jeu, sont les suivants :
 
 ### Statistiques de consommation
 
-| \          | Linear | Binay |
-| ---------- | ------ | ----- |
-| Min        | 22     | 67    |
-| Max        | 242    | 112   |
-| Moyenne    | 132    | 88    |
-| Ecart type | 72,97  | 18,06 |
+Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur les deux types de recherche.
 
-**Moyenne** plus basse (*-33%*) et une **dispersion** des consommations considérablement plus faible (*4 fois moins*)
+| \          | Linear | Binay     |
+| ---------- | ------ | --------- |
+| Min        | **22** | 67        |
+| Max        | 242    | **112**   |
+| Moyenne    | 132    | *88*      |
+| Ecart type | 72,97  | **18,06** |
+
+On constate des différences notables. En l'occurrence une **moyenne** plus basse (*-33%*) avec une **dispersion** des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
 
 
-**Recherche linaire** :
+## L'ordre de traitement
+
+Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "function dispatcher", l'ordre de traitement des fonctions sera différent, ordre bien différent de l'ordre de déclaration dans le code source ou encore l'ordre alphabétique.
+
+### Recherche linéaire
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -694,7 +702,7 @@ Les **opcodes** en jeu, sont les suivants :
 | **11** | `storeE(uint256)` |
 
 
-**Recherche binaire** :
+### Recherche "binaire"
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -711,22 +719,10 @@ Les **opcodes** en jeu, sont les suivants :
 | **11** | `storeD(uint256)` |
 
 
-
-## L'ordre de traitement
-
-- Ordre des fonctions dans le code source
-- Ordonnancé par la valeur de hash
-
-
-### Recherche linéaire
-
-
-### Recherche "binaire"
-
-
 ## Optimisations
 
-### Optimisation au déploiement
+Toujours en faisant abstraction du cout de l'exécution elle même des fonctions et que les appels aux fonctions du contrat sont 
+
 
 ### optimisation à l'exécution
 
@@ -736,11 +732,15 @@ Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(
 [Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche#Recherche) (🇫🇷)
 
 
+### Optimisation au déploiement
+
+
+
 ## Conclusions
 
 Le "*function dispatcher*" est ainsi le reflet de l'ABI.
 
-L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques)
+L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
 Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture technique de cet article.
 
