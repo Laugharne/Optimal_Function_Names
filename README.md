@@ -24,7 +24,7 @@
 		- [Recherche linéaire](#recherche-lin%C3%A9aire)
 		- [Recherche "binaire"](#recherche-binaire)
 	- [Optimisations](#optimisations)
-		- [optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
+		- [Optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
 		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
 	- [Conclusions](#conclusions)
 	- [Liens](#liens)
@@ -38,7 +38,7 @@
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
 - Coder en Yul, résout la problématique de l'odonnancement.
-- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'appel de ces dernières.
+- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'exécution de ces dernières.
 
 
 ## Présentation du "function dispatcher"
@@ -71,7 +71,7 @@ Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.solidityl
 
 Je précise bien que je parle de l'identité pour le compilateur **Solidity**, ce n'est pas forcément le cas avec d'autres langages comme **Rust** qui fonctionne sur un tout autre paradigme.
 
-Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme par exemple la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
+Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme pour la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
 
 Cependant, le fait que l'on ne garde que **quatre octets** pour l'identité, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32).
 
@@ -311,15 +311,15 @@ tag getValue_2
   RETURN 
 ```
 
-Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusioner le code des deux fonctions.
+Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusionner le code des deux fonctions.
 
 Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity. Dont on peut résumé le contenu en quatre points essentiels.
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
-2. Bien que le code source du contrat avec les getters automatique soit plus court que celui avec des getters explicites, le coût du gaz est sensiblement le même. Les getters automatique ne sont pas « *gratuits* ».
+2. Bien que le code source du contrat avec les getters automatique soit plus court que celui avec des getters explicites, le coût du gaz est sensiblement le même. Les getters automatiques ne sont pas « *gratuits* ».
 
-3. Ne publiez que les variables de stockage qui sont essentielles, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
+3. Ne publiez que les variables de stockage qui sont essentiels, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
 
 4. Des getters explicites peuvent être requis pour les types `array` et `mapping`. Ils ne sont pas générés automatiquement.
 
@@ -376,7 +376,7 @@ object "runtime" {
 
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
-Réaliser un contrat **100% en Yul**, oblige à coder soi même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithmes qu'une simple suite de tests en cascade.
+Réaliser un contrat **100% en Yul**, oblige à coder soi-même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithmes qu'une simple suite de tests en cascade.
 
 
 ## Ça se complique !
@@ -453,7 +453,7 @@ Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les 6 fonctions pu
 
 Suivant le [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/internals/optimizer.html) (🇬🇧) du compilateur, nous obtenons un code différent pour le "*function dispatcher*".
 
-Avec un niveau à **200** (*`--optimize-runs 200`*) nous obtenons le type de code précédement généré, avec ses `if/else` en cascade.
+Avec un niveau à **200** (*`--optimize-runs 200`*) nous obtenons le type de code précédemment généré, avec ses `if/else` en cascade.
 
 ```yul
 tag 1
@@ -503,7 +503,7 @@ tag 1
   REVERT
 ```
 
-Par contre avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
+Par contre, avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
 
 ```yul
 tag 1
@@ -569,18 +569,18 @@ Le flux d'exécution, n'est plus le même.
 
 ![](functions_split_dispatcher_diagram.png)
 
-On voit que les test sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. diminuant ainsi par deux le cout pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
+On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. Diminuant ainsi par deux le cout pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
 
 
 ### Seuils
 
-Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précedent algorithme.
+Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précédent algorithme.
 
 La détermination du déclenchement de ce type d'optimisation est un peu délicat à obtenir, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
 
-Avec **11 fonctions** éligibles, et un niveau de runs encore différents `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
+Avec **11 fonctions** éligibles, et un niveau de runs encore différent `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
 
-Ces seuils (valeur de `runs`) sont-t'il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
+Ces seuils (valeur de `runs`) sont-t-il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
 
 
 ### Pseudo-code
@@ -621,20 +621,20 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 
 ### Calcul des couts en gas
 
-J'ai pris pour reférence le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
+J'ai pris pour référence le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
 
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
-- C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'éxécution des fonctions qui est estimé, et non ce que fait la fonction et ce qu'elle consomme comme Gas.
+- C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé, et non ce que fait la fonction et ce qu'elle consomme comme Gas.
 
-Les couts en Gas des opcodes utilisés, ont été réalisé en m'aidant de des sites suivants :
+Les couts en Gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
 
-Les **opcodes** en jeu, sont ainsi les suivants :
+Les **opcodes** en jeu sont ainsi les suivants :
 
 | Mnemonic           | Gas | Description                             |
 | ------------------ | --- | --------------------------------------- |
@@ -678,7 +678,7 @@ Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur
 | Moyenne    | 132    | *88*      |
 | Ecart type | 72,97  | **18,06** |
 
-On constate des différences notables. En l'occurrence une **moyenne** plus basse (*-33%*) avec une **dispersion** des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
+On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une **dispersion** des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
 
 
 ## L'ordre de traitement
@@ -721,10 +721,11 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 
 ## Optimisations
 
-Toujours en faisant abstraction du cout de l'exécution elle même des fonctions et que les appels aux fonctions du contrat sont 
+Toujours en faisant abstraction du cout de l'exécution elle-même des fonctions (ce qu'elles font)
 
+Et si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci ne couteront pas la même chose en fonction de leurs noms.
 
-### optimisation à l'exécution
+### Optimisation à l'exécution
 
 Seuil(s) pivot
 
@@ -736,11 +737,12 @@ Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(
 
 
 
+
 ## Conclusions
 
 Le "*function dispatcher*" est ainsi le reflet de l'ABI.
 
-L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
+L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
 Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture technique de cet article.
 
