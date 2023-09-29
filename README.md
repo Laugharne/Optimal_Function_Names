@@ -218,7 +218,7 @@ tag 2
 Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en cascade.
 
 ![](functions_dispatcher_diagram.png)
-<!-- ![](functions_dispatcher_diagram.svg) -->
+![](functions_dispatcher_diagram.svg)
 
 
 ##### Ordre d'évaluation
@@ -621,13 +621,20 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 
 ### Calculs des couts en gas
 
+J'ai pris pour reférence un code avec 11 fonctions éligibles au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
+
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
-A l'aide de :
+- C'est uniquement le cout de la sélection dans le "*function dispatcher*" et non l'éxécution des fonctions qui est estimé, peut importe donc ce que fait la fonction.
+
+Les couts en Gas des opcodes utilisés, ont été réalisé en m'aidant de des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
+
+
+Les **opcodes** en jeu, sont les suivants :
 
 | Mnemonic           | Gas | Description                             |
 | ------------------ | --- | --------------------------------------- |
@@ -639,19 +646,20 @@ A l'aide de :
 | `PUSH [tag]`       | 3   | Push 2-byte value onto stack.           |
 | `JUMPI`            | 10  | Conditionally alter the program counter |
 
-| #      | Signature         | Identité         | Gas (linear)    | Gas (binary)    |
-| ------ | ----------------- | ---------------- | --------------- | --------------- |
-| **1**  | `storeI(uint256)` | `183301E7`       | **22 (*min*)**  | 69              |
-| **2**  | `retrieve()`      | `2E64CEC1`       | 44              | 91              |
-| **3**  | `storeC(uint256)` | `4CF56E0C` (*2*) | 66              | 69              |
-| **4**  | `storeJ(uint256)` | `6EC51CF6`       | 88              | 90              |
-| **5**  | `storeH(uint256)` | `75A64B6D`       | 110             | **112 (*max*)** |
-| **6**  | `storeG(uint256)` | `799EBD70` (*1*) | 132             | 68              |
-| **7**  | `storeB(uint256)` | `9AE4B7D0`       | 154             | 90              |
-| **8**  | `storeD(uint256)` | `B87C712B`       | 176             | **112 (*max*)** |
-| **9**  | `storeF(uint256)` | `B9E9C35C` (*2*) | 198             | **67 (*min*)**  |
-| **10** | `storeA(uint256)` | `C534BE7A`       | 220             | 89              |
-| **11** | `storeE(uint256)` | `E45F4CF5`       | **242 (*max*)** | 111             |
+
+| Signatures        | Identités        | Gas (linear)    | Gas (binary)    |
+| ----------------- | ---------------- | --------------- | --------------- |
+| `storeI(uint256)` | `183301E7`       | **22 (*min*)**  | 69              |
+| `retrieve()`      | `2E64CEC1`       | 44              | 91              |
+| `storeC(uint256)` | `4CF56E0C` (*2*) | 66              | 69              |
+| `storeJ(uint256)` | `6EC51CF6`       | 88              | 90              |
+| `storeH(uint256)` | `75A64B6D`       | 110             | **112 (*max*)** |
+| `storeG(uint256)` | `799EBD70` (*1*) | 132             | 68              |
+| `storeB(uint256)` | `9AE4B7D0`       | 154             | 90              |
+| `storeD(uint256)` | `B87C712B`       | 176             | **112 (*max*)** |
+| `storeF(uint256)` | `B9E9C35C` (*2*) | 198             | **67 (*min*)**  |
+| `storeA(uint256)` | `C534BE7A`       | 220             | 89              |
+| `storeE(uint256)` | `E45F4CF5`       | **242 (*max*)** | 111             |
 
 - (*1*) : *premier seuil*
 - (*2*) : *seuils secondaires*
@@ -666,7 +674,42 @@ A l'aide de :
 | Moyenne    | 132    | 88    |
 | Ecart type | 72,97  | 18,06 |
 
-**Moyenne** plus basse (*-33%*) et une **dispersion** des consommations significativement plus faible (*4 fois moins*)
+**Moyenne** plus basse (*-33%*) et une **dispersion** des consommations considérablement plus faible (*4 fois moins*)
+
+
+**Recherche linaire** :
+
+| #      | Signatures        |
+| ------ | ----------------- |
+| **1**  | `storeI(uint256)` |
+| **2**  | `retrieve()`      |
+| **3**  | `storeC(uint256)` |
+| **4**  | `storeJ(uint256)` |
+| **5**  | `storeH(uint256)` |
+| **6**  | `storeG(uint256)` |
+| **7**  | `storeB(uint256)` |
+| **8**  | `storeD(uint256)` |
+| **9**  | `storeF(uint256)` |
+| **10** | `storeA(uint256)` |
+| **11** | `storeE(uint256)` |
+
+
+**Recherche binaire** :
+
+| #      | Signatures        |
+| ------ | ----------------- |
+| **1**  | `storeF(uint256)` |
+| **2**  | `storeG(uint256)` |
+| **3**  | `storeI(uint256)` |
+| **4**  | `storeC(uint256)` |
+| **5**  | `storeA(uint256)` |
+| **6**  | `storeJ(uint256)` |
+| **7**  | `storeB(uint256)` |
+| **8**  | `retrieve()`      |
+| **9**  | `storeE(uint256)` |
+| **10** | `storeH(uint256)` |
+| **11** | `storeD(uint256)` |
+
 
 
 ## L'ordre de traitement
