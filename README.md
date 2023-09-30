@@ -452,7 +452,7 @@ contract Storage {
 
 }
 ```
-Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les 6 fonctions public suivantes avec leur identités dédiées :
+Nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les **6 fonctions `public`** suivantes avec leur identités dédiées :
 
 | Fonctions                                      | Signatures        | Identités      |
 | ---------------------------------------------- | ----------------- | -------------- |
@@ -515,7 +515,7 @@ tag 1
   REVERT
 ```
 
-Par contre, avec un niveau de runs plus élevé (*`--optimize-runs 300`*)
+Par contre, avec un niveau de `runs` plus élevé (*`--optimize-runs 300`*)
 
 ```yul
 tag 1
@@ -581,16 +581,16 @@ Le flux d'exécution, n'est plus le même.
 
 ![](functions_split_dispatcher_diagram.png)
 
-On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. Diminuant ainsi par deux le cout pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
+On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. Diminuant ainsi la consommation pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
 
 
 ### Seuils
 
 Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précédent algorithme.
 
-La détermination du déclenchement de ce type d'optimisation est un peu délicat à obtenir, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
+La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
 
-Avec **11 fonctions** éligibles, et un niveau de runs encore différent `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
+Avec **11 fonctions** éligibles, et un niveau de `runs` supérieur `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
 
 Ces seuils (valeur de `runs`) sont-t-il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
 
