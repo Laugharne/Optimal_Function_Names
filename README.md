@@ -82,6 +82,18 @@ Comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.dir
 | `0xcae9ca51` | `onHintFinanceFlashloan(address,address,uint256,bool,bytes)` |
 | `0xcae9ca51` | `approveAndCall(address,uint256,bytes)`                      |
 
+Un simple contrat Solidity doté de ces deux fonctions ne se compile heureusement pas.
+
+```
+TypeError: Function signature hash collision for approveAndCall(address,uint256,bytes)
+  --> contracts/HashCollision.sol:10:1:
+   |
+10 | contract HashCollision {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+```
+
+Mais n'en demeure pas moins problématique : [**Web3 Hacking: Paradigm CTF 2022 Writeup**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
+
 
 ### En Solidity
 
@@ -675,7 +687,7 @@ Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur
 | ---------- | ------ | --------- |
 | Min        | **22** | 67        |
 | Max        | 242    | **112**   |
-| Moyenne    | 132    | *88*      |
+| Moyenne    | 132    | **88**    |
 | Ecart type | 72,97  | **18,06** |
 
 On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une **dispersion** des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
@@ -723,7 +735,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 
 Toujours en faisant abstraction du cout de l'exécution elle-même des fonctions (ce qu'elles font)
 
-Et si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci ne couteront pas la même chose en fonction de leurs noms.
+Et si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci ne couteront pas la même chose en fonction de leurs noms. On voit clairement que tel quel le cout de sélection d'un appel vers ces fonctions est très etherogène et peu pratique, quel que soit l'algorithme.
 
 ### Optimisation à l'exécution
 
@@ -782,5 +794,6 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture techn
 - Divers
   - 🇬🇧 [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
   - 🇬🇧 [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
+  - 🇬🇧 [Web3 Hacking: Paradigm CTF 2022 Writeup](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5)
 
 
