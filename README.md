@@ -1,8 +1,8 @@
-# Optimisation des noms de fonctions avec les EVMs
+# Bien nommer vos fonctions en Solidity : Maximisez l'efficacité des EVMs
 
 <!-- TOC -->
 
-- [Optimisation des noms de fonctions avec les EVMs](#optimisation-des-noms-de-fonctions-avec-les-evms)
+- [Bien nommer vos fonctions en Solidity : Maximisez l'efficacité des EVMs](#bien-nommer-vos-fonctions-en-solidity--maximisez-lefficacit%C3%A9-des-evms)
 	- [TL;DR](#tldr)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
