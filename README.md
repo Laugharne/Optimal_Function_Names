@@ -705,6 +705,7 @@ On constate des différences notables. En l'occurrence, une **moyenne** plus bas
 
 Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "function dispatcher", l'ordre de traitement des fonctions sera différent, ordre bien différent de l'ordre de déclaration dans le code source ou encore l'ordre alphabétique.
 
+
 ### Recherche linéaire
 
 | #      | Signatures        |
@@ -738,11 +739,13 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 | **10** | `storeH(uint256)` |
 | **11** | `storeD(uint256)` |
 
+Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*noms*). On voit clairement que tel quel le cout de sélection d'un appel vers ces fonctions, quel que soit l'algorithme est très etherogène et si il peut être estimé, il ne peut être choisi.
+
+Ne serait-il pas intéressant ...
+
+
 
 ## Optimisations
-
-Toujours en faisant abstraction du cout de l'exécution elle-même des fonctions. 
-Et si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci ne couteront pas la même chose en fonction de leurs noms. On voit clairement que tel quel le cout de sélection d'un appel vers ces fonctions est très etherogène et peu pratique, quel que soit l'algorithme.
 
 
 ### Optimisation à l'exécution
