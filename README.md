@@ -17,6 +17,7 @@
 		- [En Yul](#en-yul)
 	- [Ça se complique !](#%C3%A7a-se-complique-)
 		- [Seuils](#seuils)
+		- [fonctions](#fonctions)
 		- [Pseudo-code](#pseudo-code)
 		- [Calcul des couts en gas](#calcul-des-couts-en-gas)
 		- [Statistiques de consommation](#statistiques-de-consommation)
@@ -92,7 +93,7 @@ TypeError: Function signature hash collision for approveAndCall(address,uint256,
    | ^ (Relevant source part starts here and spans across multiple lines).
 ```
 
-Mais n'en demeure pas moins problématique : [**Web3 Hacking: Paradigm CTF 2022 Writeup**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
+Mais n'en demeure pas moins problématique : Voir le challenge **Hint-finance**, au [**Web3 Hacking: Paradigm CTF 2022 Writeup**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
 
 
 ### En Solidity
@@ -237,12 +238,12 @@ Sous forme de diagramme, on comprend mieux la suite de structure de `if/else` en
 
 **Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
 
-| Ordre d'évaluation | Ordre dans le code | Identités | Signatures                   |
-| ------------------ | ------------------ | --------- | ---------------------------- |
-| 1                  | **3**              | 20965255  | getValue()                   |
-| 2                  | **1**              | 3FA4F245  | value (*getter automatique*) |
-| 3                  | **2**              | 55241077  | setValue(uint256)            |
-| 4                  | **4**              | E778DDC1  | getInternalValue()           |
+| Ordre d'évaluation | Ordre dans le code | Identités   | Signatures                     |
+| ------------------ | ------------------ | ----------- | ------------------------------ |
+| 1                  | **3**              | `20965255`  | `getValue()`                   |
+| 2                  | **1**              | `3FA4F245`  | `value` (*getter automatique*) |
+| 3                  | **2**              | `55241077`  | `setValue(uint256)`            |
+| 4                  | **4**              | `E778DDC1`  | `getInternalValue()`           |
 
 En effet, les évaluations des Identités de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
 
@@ -395,7 +396,7 @@ Réaliser un contrat **100% en Yul**, oblige à coder soi-même le "*function di
 
 Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes en fonction du **nombre de fonctions** et du niveau d'**optimisation** du **compilateur** Solidity (voir : `--optimize-runs`) !
 
-**Exemple #1** :
+**Exemple #2** :
 
 ```solidity
 // SPDX-License-Identifier: GPL-3.0
@@ -577,7 +578,7 @@ tag 2
   REVERT
 ```
 
-Le flux d'exécution, n'est plus le même.
+Les opcodes et le flux d'exécution, ne sont plus les mêmes.
 
 ![](functions_split_dispatcher_diagram.png)
 
@@ -586,9 +587,12 @@ On voit que les tests sont "découpés" en deux recherches linéaires autour d'u
 
 ### Seuils
 
-Seulement **4 tests** pour ces fonctions  et `storeE(uint256)`, au lieu de respectivement **3 tests** pour `storeB(uint256)` et **6 tests** pour `storeE(uint256)` avec le précédent algorithme.
+Seulement **4 tests** pour les fonctions `storeB(uint256)` et `storeE(uint256)`, au lieu de respectivement **3 tests** et **6 tests** avec le précédent algorithme.
 
 La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
+
+
+### 11 fonctions
 
 Avec **11 fonctions** éligibles, et un niveau de `runs` supérieur `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
 
@@ -596,6 +600,8 @@ Ces seuils (valeur de `runs`) sont-t-il susceptibles d'évoluer au fil des versi
 
 
 ### Pseudo-code
+
+Cette fois-ci, je ne reproduit pas les opcodes et le diagramme associé, afin de clarifier l'explication, voici le flux d'exécution sous forme de *pseudo-code*, semblable à du code **C**.
 
 ```c
 // [tag 1]
@@ -630,18 +636,20 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 }
 ```
 
+On distingue mieux les articulations autour des différentes valeurs "pivots" `799EBD70`, `0x4CF56E0C` et `0xB9E9C35C`.
+
 
 ### Calcul des couts en gas
 
-J'ai pris pour référence le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
+J'ai pris pour référence toujours le même code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
 
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
-- C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé, et non ce que fait la fonction et ce qu'elle consomme comme Gas.
+- C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme Gas.
 
-Les couts en Gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
+L'estimation des couts en Gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
@@ -733,9 +741,9 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 
 ## Optimisations
 
-Toujours en faisant abstraction du cout de l'exécution elle-même des fonctions (ce qu'elles font)
-
+Toujours en faisant abstraction du cout de l'exécution elle-même des fonctions. 
 Et si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci ne couteront pas la même chose en fonction de leurs noms. On voit clairement que tel quel le cout de sélection d'un appel vers ces fonctions est très etherogène et peu pratique, quel que soit l'algorithme.
+
 
 ### Optimisation à l'exécution
 
@@ -756,7 +764,7 @@ Le "*function dispatcher*" est ainsi le reflet de l'ABI.
 
 L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
-Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture technique de cet article.
+Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de cet article.
 
 
 ## Liens
