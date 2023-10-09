@@ -4,6 +4,7 @@
 
 - [Bien nommer vos fonctions en Solidity : Maximisez l'efficacité des EVMs](#bien-nommer-vos-fonctions-en-solidity--maximisez-lefficacit%C3%A9-des-evms)
 	- [TL;DR](#tldr)
+	- [Introduction](#introduction)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
 	- [Idnetités et Signatures des fonctions](#idnetit%C3%A9s-et-signatures-des-fonctions)
@@ -19,12 +20,12 @@
 		- [Seuils](#seuils)
 		- [fonctions](#fonctions)
 		- [Pseudo-code](#pseudo-code)
-		- [Calcul des couts en gas](#calcul-des-couts-en-gas)
+		- [Calcul des couts en Gas](#calcul-des-couts-en-gas)
 		- [Statistiques de consommation](#statistiques-de-consommation)
 	- [L'ordre de traitement](#lordre-de-traitement)
-		- [Recherche linéaire](#recherche-lin%C3%A9aire)
-		- [Recherche "binaire"](#recherche-binaire)
-	- [Optimisations](#optimisations)
+			- [Recherche linéaire](#recherche-lin%C3%A9aire)
+			- [Recherche "binaire"](#recherche-binaire)
+	- [Les optimisations](#les-optimisations)
 		- [Optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
 		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
 	- [Conclusions](#conclusions)
@@ -39,7 +40,16 @@
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
 - Coder en Yul, résout la problématique de l'odonnancement.
-- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement et à l'exécution de ces dernières.
+- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement comme à l'exécution de ces dernières.
+
+
+## Introduction
+
+L'optimisation des coûts en Gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum. Chaque opération effectuée sur Ethereum a un coût en Gas, qui dépend en partie de la complexité des fonctions appelées.
+
+Dans cet article, nous allons explorer comment le simple fait de nommer vos fonctions peut influencer les coûts en Gas associés à votre contrat.
+
+Nous discuterons de diverses stratégies d'optimisation, de l'ordre des hash de signatures aux astuces de renommage des fonctions, afin de réduire les coûts de déploiement et d'appel de vos contrats.
 
 
 ## Présentation du "function dispatcher"
@@ -48,11 +58,12 @@ Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les contrats inte
 
 Si on imagine un contrat intelligent comme une boîte noire avec des fonctions à l'intérieur.  Ces fonctions peuvent être comme des commandes que vous pouvez donner à la boîte pour lui faire faire différentes choses.
 
-Le "*function dispatcher*" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.
+Le "*function dispatcher*" écoute les commandes et dirige chaque commande vers la fonction appropriée à l'intérieur de la boîte.  En cela il est le reflet de l'**ABI** coté EVM.
 
 Lorsque vous interagissez avec un contrat intelligent en utilisant une application ou une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
 
 En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
+
 
 
 ## Fonctionnement
@@ -124,7 +135,7 @@ Il ne concerne que les fonctions d'un contrat ayant un accès vers l'extérieur 
 
 1. **External** : Les fonctions externes sont conçues pour être appelées depuis l'**extérieur du contrat**, généralement par d'autres contrats ou des comptes externes. C'est le niveau de visibilité que vous utilisez lorsque vous souhaitez exposer une interface publique à votre contrat.
 
-2. **Public** : Les fonctions publiques sont similaires aux fonctions externes, mais elles offrent également une méthode de lecture de données qui ne consomme pas de gaz. Les fonctions publiques sont accessibles depuis l'**extérieur du contrat**.
+2. **Public** : Les fonctions publiques sont similaires aux fonctions externes, mais elles offrent également une méthode de lecture de données qui ne consomme pas de Gas. Les fonctions publiques sont accessibles depuis l'**extérieur du contrat**.
 
 3. **Internal** : Les fonctions internes peuvent être appelées à l'**intérieur du contrat**, ainsi que depuis d'autres **contrats héritant** du contrat actuel. Elles ne sont pas accessibles depuis l'extérieur du contrat via une transaction directe.
 
@@ -330,7 +341,7 @@ Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un articl
 
 1. Utilisez les getters automatique de Solidity lorsque cela est possible, car ils seront toujours similaires ou moins chers en Gas que les getters explicites. Dans certains cas, par exemple une structure de stockage publique (`public` storage) ils peuvent être le seul moyen de fournir un getter.
 
-2. Bien que le code source du contrat avec les getters automatique soit plus court que celui avec des getters explicites, le coût du gaz est sensiblement le même. Les getters automatiques ne sont pas « *gratuits* ».
+2. Bien que le code source du contrat avec les getters automatique soit plus court que celui avec des getters explicites, le coût du Gas est sensiblement le même. Les getters automatiques ne sont pas « *gratuits* ».
 
 3. Ne publiez que les variables de stockage qui sont essentiels, en raison du coût du Gas. En particulier, essayez d'éviter les getters pour les structures de données dynamiques. Les types de structures complexes, y compris les chaînes, sont assez coûteux à rendre publics.
 
@@ -639,7 +650,7 @@ if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
 On distingue mieux les articulations autour des différentes valeurs "pivots" `799EBD70`, `0x4CF56E0C` et `0xB9E9C35C`.
 
 
-### Calcul des couts en gas
+### Calcul des couts en Gas
 
 J'ai pris pour référence toujours le même code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le cout en Gas, selon que l'on ait une recherche linéaire ou "binaire".
 
@@ -706,7 +717,7 @@ On constate des différences notables. En l'occurrence, une **moyenne** plus bas
 Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "function dispatcher", l'ordre de traitement des fonctions sera différent, ordre bien différent de l'ordre de déclaration dans le code source ou encore l'ordre alphabétique.
 
 
-### Recherche linéaire
+#### Recherche linéaire
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -723,7 +734,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 | **11** | `storeE(uint256)` |
 
 
-### Recherche "binaire"
+#### Recherche "binaire"
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -739,21 +750,19 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "fun
 | **10** | `storeH(uint256)` |
 | **11** | `storeD(uint256)` |
 
-Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*noms*). On voit clairement que tel quel le cout de sélection d'un appel vers ces fonctions, quel que soit l'algorithme est très etherogène et si il peut être estimé, il ne peut être choisi.
-
-Ne serait-il pas intéressant ...
+Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wiki/Recherche_dichotomique) au sens strict du terme, mais plutôt d'un découpage des groupes de tests séquentiels autour de valeurs pivots. Mais au final, le nombre de tests et donc sa complexité est pareillement en [**O(log n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques) .
 
 
+## Les optimisations
 
-## Optimisations
+Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme est très etherogène et si il peut être estimé, il ne peut être imposé.
+
+Ne serait-il pas intéressant de renomer (en les suffixant) les noms de certaines fonctions afin de modifier leur signature et ainsi obtenir une identité plus conforme avec nos attentes en consommation de Gas...
 
 
 ### Optimisation à l'exécution
 
 Seuil(s) pivot
-
-Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(n)** dans le cas critique où l'arbre est complètement déséquilibré et ressemble à une liste chaînée. Ce problème est écarté si l'arbre est équilibré par rotation au fur et à mesure des insertions pouvant créer des listes trop longues. 
-[Wikipédia](https://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche#Recherche) (🇫🇷)
 
 
 ### Optimisation au déploiement
@@ -763,11 +772,22 @@ Cette opération requiert un temps en **O(log(n))** dans le cas moyen, mais **O(
 
 ## Conclusions
 
-Le "*function dispatcher*" est ainsi le reflet de l'ABI.
+- L'optimisation des coûts en Gas est un aspect essentiel de la conception de contrats intelligents efficaces sur Ethereum.
 
-L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration. Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
+- En faisant attention aux détails tels que l'ordre des signatures de fonction, le nombre de zéros en début de hash, l'ordre de traitement des fonctions, et le renommage des fonctions, vous pouvez réduire de manière significative les coûts associés à votre contrat.
 
-Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de cet article.
+- **Attention** toutefois la convivialité et la lisibilité de votre code, peut en être légerement réduite.
+
+- L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration, ou celle trop peu fréquement appelées.
+
+- Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
+
+En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en Gas.
+
+
+
+
+<!-- *Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de cet article.* -->
 
 
 ## Liens
@@ -784,12 +804,13 @@ Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de ce
 - Recherche dichotomique
   - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
   - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
+  - 🇬🇧 [Big O notation - Wikipedia](https://en.wikipedia.org/wiki/Big_O_notation)
 
 - Reférences
   - 🇬🇧 [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
   - 🇬🇧 [Opcodes for the EVM](https://ethereum.org/en/developers/docs/evm/opcodes/)
   - 🇬🇧 [EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference](https://www.evm.codes/?fork=shanghai)
-  - 🇬🇧 [Operations with dynamic gas costs](https://github.com/wolflo/evm-opcodes/blob/main/gas.md)
+  - 🇬🇧 [Operations with dynamic Gas costs](https://github.com/wolflo/evm-opcodes/blob/main/gas.md)
   - 🇬🇧 [Contract ABI Specification — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)
   - 🇬🇧 [Yul — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/yul.html)
   - 🇬🇧 [Yul — Complete ERC20 Example](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example)
