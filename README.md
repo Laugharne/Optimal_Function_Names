@@ -405,7 +405,7 @@ Réaliser un contrat **100% en Yul**, oblige à coder soi-même le "*function di
 
 ## Ça se complique !
 
-Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes en fonction du **nombre de fonctions** et du niveau d'**optimisation** du **compilateur** Solidity (voir : `--optimize-runs`) !
+Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes que cela en fonction du **nombre de fonctions** et du niveau d'**optimisation** du **compilateur** Solidity (voir : `--optimize-runs`) !
 
 **Exemple #2** :
 
@@ -702,19 +702,19 @@ Ce qui m'a permit d'estimer les couts en Gas de recherche de chaque fonction, se
 
 Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur les deux types de recherche.
 
-| \          | Linear | Binay     |
+| \          | Linear | Binary    |
 | ---------- | ------ | --------- |
 | Min        | **22** | 67        |
 | Max        | 242    | **112**   |
 | Moyenne    | 132    | **88**    |
-| Ecart type | 72,97  | **18,06** |
+| Ecart-type | 72,97  | **18,06** |
 
-On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une **dispersion** des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
+On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une [**dispersion**](https://fr.wikipedia.org/wiki/%C3%89cart_type) des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
 
 
 ## L'ordre de traitement
 
-Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "function dispatcher", l'ordre de traitement des fonctions sera différent, ordre bien différent de l'ordre de déclaration dans le code source ou encore l'ordre alphabétique.
+Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*function dispatcher*", l'ordre de traitement des fonctions sera différent, aussi bien de l'ordre de déclaration dans le code source que de l'ordre alphabétique.
 
 
 #### Recherche linéaire
