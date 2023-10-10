@@ -763,7 +763,7 @@ Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
 
-Les **zéros** dans les deux octets de poids forts, feront ainsi de manière mathématique remonté en premier le traitement de ce cas en premier.
+Les **zéros** dans les deux octets de poids forts, feront ainsi de manière mathématique remonter en priorité le traitement du cas de cette fonction.
 
 
 ### Optimisation à l'exécution
