@@ -750,7 +750,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*fu
 | **10** | `storeH(uint256)` |
 | **11** | `storeD(uint256)` |
 
-Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wiki/Recherche_dichotomique) au sens strict du terme, mais plutôt d'un découpage des groupes de tests séquentiels autour de valeurs pivots. Mais au final, le nombre de tests et donc sa complexité est pareillement en [**O(log n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques) .
+Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wiki/Recherche_dichotomique) au sens strict du terme, mais plutôt d'un découpage en groupes de tests séquentiels autour de valeurs pivots. Mais au final, le nombre de tests et donc sa complexité est identique, en [**O(log n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques) .
 
 
 ## Les optimisations
