@@ -781,7 +781,7 @@ Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez g�
 
 Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
 
-![](2023-10-10-15-50-45.png)
+![](g_tx_data.png)
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
 
