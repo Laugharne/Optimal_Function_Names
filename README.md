@@ -757,7 +757,7 @@ Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wik
 
 ## Les optimisations
 
-Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*et par là même leurs noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'i 'il peut être estimé, il ne peut être imposé.
+Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquance d'utilisation) celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*et par là même de leurs noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
 
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction, mais aussi, comme nous le verrons plus loin, lors du déploiement.
 
