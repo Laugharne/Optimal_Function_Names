@@ -772,7 +772,7 @@ La valeur inférieure de la nouvelle identité obtenue fera ainsi remonter en pr
 
 Cette optimisation peut être importante pour les contrats intelligents très complexes, car elle permet de réduire le temps nécessaire pour rechercher et sélectionner la bonne fonction à appeler, ce qui se traduit par des économies de gaz et des performances améliorées sur la blockchain Ethereum.
 
-Le fait que la recherche soit "binaire" au lieu de linéaire, complique un peu les choses, dans le sens ou en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer
+Le fait que la recherche soit "binaire" au lieu de linéaire, complique un peu les choses, dans le sens ou en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer pour choisir les nouvelles signatures en fonction de l'ordre désiré.
 
 
 ### Optimisation à la transaction
