@@ -104,7 +104,7 @@ TypeError: Function signature hash collision for approveAndCall(address,uint256,
    | ^ (Relevant source part starts here and spans across multiple lines).
 ```
 
-Mais n'en demeure pas moins problématique : Voir le challenge **Hint-finance**, au [**Web3 Hacking: Paradigm CTF 2022 Writeup**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
+Mais n'en demeure pas moins problématique : Voir le challenge [**Hint-finance**](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance), au [**Web3 Hacking: Paradigm CTF 2022**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
 
 
 ### En Solidity
