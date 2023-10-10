@@ -733,6 +733,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*fu
 | **10** | `storeA(uint256)` |
 | **11** | `storeE(uint256)` |
 
+Le nombre de tests et la complexité du processus est proportionnelle au nombre de fonctions, en [**O(n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques) .
 
 #### Recherche "binaire"
 
@@ -804,6 +805,7 @@ En fin de compte, ces optimisations peuvent faire la différence entre un contra
 - Recherche dichotomique
   - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
   - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
+  - 🇫🇷 [Calculer la performance d'un algorithme avec la notation Big-O](https://buzut.net/cours/computer-science/time-complexity)
   - 🇬🇧 [Big O notation - Wikipedia](https://en.wikipedia.org/wiki/Big_O_notation)
 
 - Reférences
