@@ -768,9 +768,11 @@ Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_low(uint32)` aura pour identité `bde6cad1` au lieu de `d27b3841`.
 
-La valeur inférieur de la nouvelle identité obtenue fera ainsi remonter en priorité le traitement de l'appel de cette fonction.
+La valeur inférieure de la nouvelle identité obtenue fera ainsi remonter en priorité le traitement de l'appel de cette fonction.
 
-Seuil(s) pivot
+Cette optimisation peut être importante pour les contrats intelligents très complexes, car elle permet de réduire le temps nécessaire pour rechercher et sélectionner la bonne fonction à appeler, ce qui se traduit par des économies de gaz et des performances améliorées sur la blockchain Ethereum.
+
+Le fait que la recherche soit "binaire" au lieu de linéaire, complique un peu les choses, dans le sens ou en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer
 
 
 ### Optimisation à la transaction
@@ -783,15 +785,15 @@ Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/ye
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
 
-| Signatures                | Identité   | TX Gas cost |
-| ------------------------- | ---------- | ----------- |
-| `deposit(uint256)`        | `b6b55f25` | 64          |
-| `deposit_ps2(uint256)`    | `0000fee6` | 40          |
-| `deposit278591A(uint256)` | `00000070` | 28          |
+Les deux octets de poids forts de l'identité, feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction, mais permettra également de consommer **moins de Gas** lors de la transaction (**40** au lieu de **64**).
 
+En voici d'autres exemples :
 
-Pour la dernière signature, les **zéros**, dans les trois octets de poids forts de l'identité, feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction, mais permettra également de consommer **moins de Gas** lors de la transaction.
+- `deposit_ps2(uint256)` au lieu de `deposit_ps2(uint256)`
+- `mint_540(uint256)` au lieu de `mint(uint256)`
+- `b_A6Q()` au lieu de `b()`
 
+Idéalement, il faudrait trouver des identités avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 Gas**.
 
 
 ## Conclusions
