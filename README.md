@@ -400,12 +400,12 @@ object "runtime" {
 
 On y retrouve la suite de structure de `if/else` en cascade, identique au diagramme précédent.
 
-Réaliser un contrat **100% en Yul**, oblige à coder soi-même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des Identités, ainsi qu'utiliser d'autres algorithmes qu'une simple suite de tests en cascade.
+Réaliser un contrat **100% en Yul**, oblige à coder soi-même le "*function dispatcher*", ce qui implique que l'on peut choisir l'ordre de traitement des identités, ainsi qu'utiliser d'autres algorithmes qu'une simple suite de tests en cascade.
 
 
 ## Ça se complique !
 
-Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes que cela en fonction du **nombre de fonctions** et du niveau d'**optimisation** du **compilateur** Solidity (voir : `--optimize-runs`) !
+Maintenant, voici un tout autre exemple pour illustrer le fait que les choses sont plus complexes que cela en fonction du **nombre de fonctions** et du **niveau d'optimisation** du compilateur Solidity (voir : `--optimize-runs`) !
 
 **Exemple #2** :
 
@@ -755,9 +755,9 @@ Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wik
 
 ## Les optimisations
 
-Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme est très etherogène et si il peut être estimé, il ne peut être imposé.
+Si on part sur le principe que les fonctions sont appelées de manière équitable, celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*et par là même leurs noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'i 'il peut être estimé, il ne peut être imposé.
 
-Ne serait-il pas intéressant de renomer (en les suffixant) les noms de certaines fonctions afin de modifier leur signature et ainsi obtenir une identité plus conforme avec nos attentes en consommation de Gas...
+Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction, mais aussi, comme nous le verrons plus loin, lors du déploiement.
 
 
 ### Optimisation à l'exécution
@@ -827,5 +827,4 @@ En fin de compte, ces optimisations peuvent faire la différence entre un contra
   - 🇬🇧 [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
   - 🇬🇧 [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
   - 🇬🇧 [Web3 Hacking: Paradigm CTF 2022 Writeup](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5)
-
 
