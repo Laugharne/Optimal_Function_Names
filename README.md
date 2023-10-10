@@ -761,10 +761,9 @@ Si on part sur le principe que les fonctions sont appelées de manière équitab
 
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction, mais aussi, comme nous le verrons plus loin, lors du déploiement.
 
-Pour illustrer la chose, la fonction `square(uint32)` renommée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
+Pour illustrer la chose, la signature de la fonction `square(uint32)` modifée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
 
 Les **zéros** dans les deux octets de poids forts, feront ainsi de manière mathématique remonté en premier le traitement de ce cas en premier.
-
 
 
 ### Optimisation à l'exécution
