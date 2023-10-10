@@ -22,12 +22,12 @@
 		- [Pseudo-code](#pseudo-code)
 		- [Calcul des couts en Gas](#calcul-des-couts-en-gas)
 		- [Statistiques de consommation](#statistiques-de-consommation)
-	- [L'ordre de traitement](#lordre-de-traitement)
-			- [Recherche linéaire](#recherche-lin%C3%A9aire)
-			- [Recherche "binaire"](#recherche-binaire)
+	- [Algorithmes et ordre de traitement](#algorithmes-et-ordre-de-traitement)
+		- [Recherche linéaire](#recherche-lin%C3%A9aire)
+		- [Recherche "binaire"](#recherche-binaire)
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
-		- [Optimisation au déploiement](#optimisation-au-d%C3%A9ploiement)
+		- [Optimisation à la transaction](#optimisation-%C3%A0-la-transaction)
 	- [Conclusions](#conclusions)
 	- [Liens](#liens)
 
@@ -656,6 +656,8 @@ J'ai pris pour référence toujours le même code d'un contrat Solidity avec **1
 
 - On ne prendra pas en compte dans les couts en Gas la portion de code qui va extraire l'identité de la fonction, en allant chercher la donnée dans la zone `calldata`.
 
+- Ni les couts de Gas nécessaire au stockage de données dans l'EVM
+
 - De même ne sera pas pris en compte les cas ou la recherche échouera et aboutira donc à un `revert`.
 
 - C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme Gas.
@@ -712,12 +714,12 @@ Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur
 On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une [**dispersion**](https://fr.wikipedia.org/wiki/%C3%89cart_type) des consommations considérablement plus faible (*4 fois moins*) en faveur de la recherche "binaire".
 
 
-## L'ordre de traitement
+## Algorithmes et ordre de traitement
 
 Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*function dispatcher*", l'ordre de traitement des fonctions sera différent, aussi bien de l'ordre de déclaration dans le code source que de l'ordre alphabétique.
 
 
-#### Recherche linéaire
+### Recherche linéaire
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -736,7 +738,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*fu
 Le nombre de tests et la complexité du processus est proportionnelle au nombre de fonctions, en [**O(n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques).
 
 
-#### Recherche "binaire"
+### Recherche "binaire"
 
 | #      | Signatures        |
 | ------ | ----------------- |
@@ -759,20 +761,36 @@ Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wik
 
 Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquance d'utilisation) celles-ci lors de leurs appels ne couteront pas la même chose en fonction de leurs signatures (*et par là même de leurs noms*). On voit clairement que tel quel le cout de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
 
-Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction, mais aussi, comme nous le verrons plus loin, lors du déploiement.
-
-Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
-
-Les **zéros**, dans les deux octets de poids forts, feront ainsi de manière mathématique remonter en priorité le traitement du cas de cette fonction.
+Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
 
 ### Optimisation à l'exécution
 
+Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_low(uint32)` aura pour identité `bde6cad1` au lieu de `d27b3841`.
+
+La valeur inférieur de la nouvelle identité obtenue fera ainsi remonter en priorité le traitement de l'appel de cette fonction.
+
 Seuil(s) pivot
 
 
-### Optimisation au déploiement
+### Optimisation à la transaction
 
+Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez généralement des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
+
+Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+
+![](2023-10-10-15-50-45.png)
+
+Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
+
+| Signatures                | Identité   | TX Gas cost |
+| ------------------------- | ---------- | ----------- |
+| `deposit(uint256)`        | `b6b55f25` | 64          |
+| `deposit_ps2(uint256)`    | `0000fee6` | 40          |
+| `deposit278591A(uint256)` | `00000070` | 28          |
+
+
+Pour la dernière signature, les **zéros**, dans les trois octets de poids forts de l'identité, feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction, mais permettra également de consommer **moins de Gas** lors de la transaction.
 
 
 
@@ -790,8 +808,13 @@ Seuil(s) pivot
 
 En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en Gas.
 
+--------
 
+Crédits : **Franck Maussand franck@maussand.net**
 
+*Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de cet article.*
+
+--------
 
 <!-- *Merci à [**Igor Bournazel**](https://github.com/ibourn) pour la relecture de cet article.* -->
 
