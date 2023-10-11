@@ -804,6 +804,8 @@ En voici d'autres exemples :
 
 Idéalement, il faudrait trouver des identités avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 Gas**.
 
+Comme par exemple **`deposit278591A(uint)`** dont l'identité est **`00000070`**.
+
 
 ## Conclusions
 
