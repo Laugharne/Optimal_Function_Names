@@ -796,7 +796,7 @@ Les deux octets de poids forts de l'identité, feront non seulement remonter en 
 
 En voici d'autres exemples :
 
-| Signatures (optimal)   | Identités (optimal) | Signatures         | Idnetités |
+| Signatures (optimal)   | Identités (optimal) | Signatures         | Identités |
 | ---------------------- | ------------------- | ------------------ | --------- |
 | `deposit_ps2(uint256)` | 0000fee6            | `deposit(uint256)` | b6b55f25  |
 | `mint_540(uint256)`    | 00009d1c            | `mint(uint256)`    | a0712d68  |
