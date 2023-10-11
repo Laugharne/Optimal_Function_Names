@@ -813,7 +813,7 @@ Idéalement, il faudrait trouver des identités avec **trois octets** de poids f
 
 - **Attention** toutefois la convivialité et la lisibilité de votre code, peut en être légerement réduite.
 
-- L'optimisation pour l'exécution n'est pas nécessaire pour les fonctions dites d'administration, ou celle trop peu fréquement appelées.
+- L'optimisation pour l'exécution n'est pas forcément nécessaire pour les fonctions dites d'administration, ou celle trop peu fréquement appelées.
 
 - Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
