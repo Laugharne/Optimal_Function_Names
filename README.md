@@ -39,8 +39,8 @@
 - Le "*function dispatcher*" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
 - Ne concerne que les fonctions ayant un accès vers l'extérieur du contrat.
 - Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
-- Coder en Yul, résout la problématique de l'odonnancement.
-- Le renommage approprié des noms de fonctions est une optimisation de Gas, au déploiement comme à l'exécution de ces dernières.
+- Coder en Yul, peut résoudre la problématique de l'odonnancement.
+- Le renommage approprié des noms de fonctions est une optimisation de Gas, à la transaction comme à l'exécution de ces dernières.
 
 
 ## Introduction
@@ -663,7 +663,7 @@ J'ai pris pour référence toujours le même code d'un contrat Solidity avec **1
 - C'est uniquement le **cout de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme Gas.
 
 L'estimation des couts en Gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
-- [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+- [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
 
@@ -779,9 +779,16 @@ Le fait que la recherche soit "binaire" au lieu de linéaire, complique un peu l
 
 Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez généralement des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
 
-Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (🇬🇧)
+Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 
 ![](g_tx_data.png)
+
+- `Gtxdatazero` coute **4 Gas** pour chaque octet nul en transaction.
+- `Gtxdatanonzero` coute **16 Gas** pour chaque octet non-nul, soit **4 fois plus cher**.
+
+Ainsi, chaque fois qu'un octet est à zéro est utilisé dans `msg.data` en lieu et place d'un octet non-nul, il économise **12 Gas**.
+
+Cette particularité des EVMs a également un impact sur la consommation d'autres opcodes comme `Gsset` et `Gsreset`.
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour identité `00001878` au lieu de `d27b3841`.
 
@@ -789,9 +796,11 @@ Les deux octets de poids forts de l'identité, feront non seulement remonter en 
 
 En voici d'autres exemples :
 
-- `deposit_ps2(uint256)` au lieu de `deposit_ps2(uint256)`
-- `mint_540(uint256)` au lieu de `mint(uint256)`
-- `b_A6Q()` au lieu de `b()`
+| Signatures (optimal)   | Identités (optimal) | Signatures         | Idnetités |
+| ---------------------- | ------------------- | ------------------ | --------- |
+| `deposit_ps2(uint256)` | 0000fee6            | `deposit(uint256)` | b6b55f25  |
+| `mint_540(uint256)`    | 00009d1c            | `mint(uint256)`    | a0712d68  |
+| `b_1Y()`               | 00008e0c            | `b()`              | 4df7e3d0  |
 
 Idéalement, il faudrait trouver des identités avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 Gas**.
 
