@@ -358,7 +358,7 @@ Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un articl
 
 Voici un extrait d'un exemple de [**contrat ERC20**](https://docs.soliditylang.org/en/develop/yul.html#complete-erc20-example) (🇬🇧) entièrement écrit en **Yul**.
 
-Si **Solidity** apporte abstraction et lisibilité, **Yul**, langage de plus bas niveau, proche de l'assembleur, permet d'avoir un bien meilleur contröle de l'exécution
+Si **Solidity** apporte abstraction et lisibilité, **Yul** langage de plus bas niveau, proche de l'assembleur, permet d'avoir un bien meilleur contrôle de l'exécution
 
 ```yul
 object "runtime" {
