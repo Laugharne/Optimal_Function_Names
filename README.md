@@ -52,8 +52,10 @@ Dans cet article, nous allons explorer comment le simple fait de nommer vos fonc
 
 Nous discuterons de diverses stratégies d'optimisation, de l'ordre des hash de signatures aux astuces de renommage des fonctions, afin de réduire les coûts de déploiement et d'appel de vos contrats.
 
-Solidity pour les EVMs Ethereum avec le compilateur solc **TODO**
-
+Cette article se base sur :
+1. Du code **solidity** (*0.8.13, 0.8.17, 08.20, 0.8.22*)
+2. Compilé avec le compilateur `solc`
+3. Pour des **EVMs** sur **Ethereum**
 
 
 ## Présentation du "function dispatcher"
