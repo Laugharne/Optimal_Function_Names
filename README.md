@@ -831,6 +831,22 @@ Comme par exemple **`deposit278591A(uint)`** dont l'empreinte est **`00000070`**
 
 En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en Gas.
 
+
+| NbrFunc\Runs | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 1000 |
+| ------------- | --- | --- | --- | --- | --- | --- | --- | --- | ---- |
+| 4             | 1   | 1   | 1   | 1   | 1   | 1   | 1   | 1   | 1    |
+| 5             | 1   | 1   | 1   | 1   | 2   | 2   | 2   | 2   | 2    |
+| 6             | 1   | 2   | 2   | 2   | 2   | 2   | 2   | 2   | 2    |
+| 7             | 2   | 2   | 2   | 2   | 2   | 2   | 2   | 2   | 2    |
+| 8             | 2   | 2   | 2   | 2   | 2   | 2   | 2   | 2   | 2    |
+| 9             | 2   | 2   | 2   | 2   | 3   | 3   | 3   | 3   | 3    |
+| 10            | 2   | 2   | 2   | 2   | 4   | 4   | 4   | 4   | 4    |
+| 11            | 2   | 3   | 3   | 3   | 4   | 4   | 4   | 4   | 4    |
+| 12            | 2   | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4    |
+| 13            | 3   | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4    |
+| 14            | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4    |
+| 15            | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4   | 4    |
+
 --------
 
 Crédits : **Franck Maussand franck@maussand.net**
