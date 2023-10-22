@@ -604,7 +604,7 @@ En revanche, à partir de cinq fonctions, le compilateur fractionne le traitemen
 
 Des [tests sur des contrats basiques](https://github.com/Laugharne/solc_runs_dispatcher) comportant de 4 à 15 fonctions, avec des optimisations de 200 à 1000 exécutions, ont démontré ces seuils.
 
-Le tableau suivant (qui résulte de ces tests) montre le nombre de fractions de séquences de tests.
+Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fractions de séquences de tests.
 
 ![](func_runs.png)
 
