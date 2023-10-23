@@ -38,11 +38,14 @@
 
 ## TL;DR
 
-- Le "*function dispatcher*" est une interface d'accès au smart contract, c'est la porte d'entrée de l'extérieur vers le contrat.
-- Ne concerne que les fonctions ayant un accès depuis l'extérieur du contrat.
-- Pourrait s'appeler "external access dispatcher", car concerne aussi les données publiques.
-- Coder en Yul, peut résoudre la problématique de l'odonnancement.
-- Le renommage approprié des noms de fonctions est une optimisation de Gas, à la transaction comme à l'exécution de ces dernières.
+```
+1. L'optimisation des coûts en Gas est crucial pour les contrats intelligents sur Ethereum.
+2. Le "*function dispatcher*" gère l'exécution des fonctions dans les smart contracts pour les EVMs.
+3. Le compilateur Solidity génère le "*function dispatcher*" pour les fonctions accessibles depuis l'extérieur, au contraire de langage comme Yul.
+4. Les empreintes et signatures des fonctions sont déterminées par leurs noms et types de paramètres.
+5. Le niveau d'optimisation du compilateur et le nombre de fonctions influence l'algorithme de sélection des fonctions.
+6. Le renommage stratégique des fonctions optimise les coûts de gaz et l'ordre d'exécution.
+```
 
 
 ## Introduction
