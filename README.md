@@ -54,7 +54,7 @@ L'optimisation des coûts en gas est un enjeu clé dans le développement de con
 - Le **bytecode** représente un smart contract sur la blockchain sous forme d'une séquence d'hexadécimaux.
 - La machine virtuelle Ethereum (**EVM**) exécute les instructions en lisant ce bytecode lors de l'interaction avec le contrat.
 - Chaque instruction élémentaire, codée sur un octet, est appelée **opcode** et a un coût en gas qui reflète les ressources nécessaires à son exécution.
-- Un compilateur traduit ce code source en bytecode exécutable par l'EVM et fournit des éléments tels que l'ABI (*interface binaire d'application*).
+- Un compilateur traduit ce code source en bytecode exécutable par l'EVM et fournit des éléments tels que l'ABI (interface binaire d'application).
 - Une **ABI** définit comment les fonctions d'un contrat doivent être appelées et les données échangées, en spécifiant les types de données des arguments et la signature des fonctions.
 
 Dans cet article, nous allons explorer comment le simple fait de nommer vos fonctions peut influencer les coûts en gas associés à votre contrat.
@@ -64,19 +64,19 @@ Nous discuterons également de diverses stratégies d'optimisation, de l'ordre d
 **Précisions :**
 
 Cette article se base sur :
-1. Du code **solidity** (*0.8.13, 0.8.17, 08.20, 0.8.22*)
+1. Du code **solidity** (0.8.13, 0.8.17, 08.20, 0.8.22)
 2. Compilé avec le compilateur `solc`
 3. Pour des **EVMs** sur **Ethereum**
 
 Les concepts suivants seront abordés :
-- Le "*function dispatcher*" : le mécnisme de sélection d'une fonction dans un contrat.
+- Le "*function dispatcher*" : le mécanisme de sélection d'une fonction dans un contrat.
 - L'empreinte : l'identitifiant d'une fonction au sein de l'EVM.
 - Et le nom de fonction en tant qu'argument (du côté de l'appelant).
 
 
 ## Présentation du "function dispatcher"
 
-Le "*function dispatcher*" (*ou gestionnaire de fonctions*) dans les smart contracts  (*contrats intelligents*) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une ABI.
+Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les smart contracts  (contrats intelligents) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une ABI.
 
 En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
 
@@ -92,9 +92,9 @@ Le mécanisme de sélection est similaire, à un celui d'une structure `switch/c
 
 ## Empreintes et Signatures des fonctions
 
-La **signature** d'une fonction tel que employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses types de paramètres (sans type de retour ni espaces)
+La **signature** d'une fonction tel qu'employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses types de paramètres (sans type de retour ni espaces)
 
-L'**empreinte** (*"selector" dans les publications anglo-saxonnes*) est l'empreinte même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧).
+L'**empreinte** ("selector" dans les publications anglo-saxonnes) est l'empreinte même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧).
 
 Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
 
@@ -474,7 +474,7 @@ Et nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les **6 fonctio
 
 Suivant le [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/internals/optimizer.html) (🇬🇧) du compilateur, nous obtenons un code différent pour le "*function dispatcher*".
 
-Avec un niveau à **200** (*`--optimize-runs 200`*) nous obtenons le type de code précédemment généré, avec ses `if/else` en cascade.
+Avec un niveau à **200** (`--optimize-runs 200`) nous obtenons le type de code précédemment généré, avec ses `if/else` en cascade.
 
 ```yul
 tag 1
@@ -524,7 +524,7 @@ tag 1
   REVERT
 ```
 
-Par contre, avec un niveau de `runs` plus élevé (*`--optimize-runs 300`*)
+Par contre, avec un niveau de `runs` plus élevé (`--optimize-runs 300`)
 
 ```yul
 tag 1
@@ -667,7 +667,7 @@ On distingue mieux les articulations autour des différentes valeurs "pivots" :
 
 J'ai pris pour référence toujours le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le coût en gas de la sélection, selon que l'on ait une recherche linéaire ou fractionnée.
 
-C'est uniquement le **coût de la sélection** dans le "_function dispatcher_" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme gas, ni du code qui extrait l'empreinte de la fonction an allant chercher la donnée dans la zone `calldata`.
+C'est uniquement le **coût de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme gas, ni du code qui extrait l'empreinte de la fonction an allant chercher la donnée dans la zone `calldata`.
 
 L'estimation des coûts en gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
@@ -719,7 +719,7 @@ Si on regarde d'un peu plus près le résultat de certaines **statistiques** sur
 | Moyenne    | 132    | **88**    |
 | Ecart-type | 72,97  | **18,06** |
 
-On constate des différences notables. En l'occurrence, une **moyenne** plus basse (*-33%*) avec une [**dispersion**](https://fr.wikipedia.org/wiki/%C3%89cart_type) des consommations considérablement plus faible (*4 fois moins*) en faveur du traitement par fractions.
+On constate des différences notables. En l'occurrence, une **moyenne** plus basse (-33%) avec une [**dispersion**](https://fr.wikipedia.org/wiki/%C3%89cart_type) des consommations considérablement plus faible (4 fois moins) en faveur du traitement par fractions.
 
 
 ## Algorithmes et ordre de traitement
@@ -769,7 +769,7 @@ Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wik
 
 ## Les optimisations
 
-Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquance d'utilisation) celles-ci lors de leurs appels ne coûteront pas la même chose en fonction de leurs signatures (*et par là même de leurs noms*). On voit clairement que tel quel le coût de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
+Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquance d'utilisation) celles-ci lors de leurs appels ne coûteront pas la même chose en fonction de leurs signatures (et par là même de leurs noms). On voit clairement que tel quel le coût de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
 
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
