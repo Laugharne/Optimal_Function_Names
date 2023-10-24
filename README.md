@@ -3,7 +3,7 @@
 <!-- TOC -->
 
 - [Optimisation sur Ethereum : Faites la différence avec les noms de fonctions](#optimisation-sur-ethereum--faites-la-diff%C3%A9rence-avec-les-noms-de-fonctions)
-	- [TL;DR](#tldr)
+	- [Points clés](#points-cl%C3%A9s)
 	- [Introduction](#introduction)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
@@ -20,7 +20,7 @@
 		- [Influence du niveau de runs](#influence-du-niveau-de-runs)
 		- [Onze fonctions et mille runs](#onze-fonctions-et-mille-runs)
 		- [Pseudo-code](#pseudo-code)
-		- [Calcul des coûts en Gas](#calcul-des-co%C3%BBts-en-gas)
+		- [Calcul des coûts en gas](#calcul-des-co%C3%BBts-en-gas)
 		- [Statistiques de consommation](#statistiques-de-consommation)
 	- [Algorithmes et ordre de traitement](#algorithmes-et-ordre-de-traitement)
 		- [Recherche linéaire runs = 200](#recherche-lin%C3%A9aire-runs--200)
@@ -36,21 +36,19 @@
 
 
 
-## TL;DR
+## Points clés
 
-```
-1. L'optimisation des coûts en Gas est crucial pour les contrats intelligents sur Ethereum.
+1. L'optimisation des coûts en gas est crucial pour les contrats intelligents sur Ethereum.
 2. Le "*function dispatcher*" gère l'exécution des fonctions dans les smart contracts pour les EVMs.
-3. Le compilateur Solidity génère le "*function dispatcher*" pour les fonctions accessibles depuis l'extérieur, au contraire de langage comme Yul.
-4. Les empreintes et signatures des fonctions sont déterminées par leurs noms et types de paramètres.
-5. Le niveau d'optimisation du compilateur et le nombre de fonctions influence l'algorithme de sélection des fonctions.
-6. Le renommage stratégique des fonctions optimise les coûts de gaz et l'ordre d'exécution.
-```
+3. Le compilateur Solidity génère le "*function dispatcher*" des fonctions exposées publiquement, en Yul cela doit être coder.
+4. Les signatures, hashs et empreintes des fonctions sont déterminées par leurs noms et types de paramètres.
+5. Le réglage d'optimisation du compilateur et le nombre de fonctions impactent l'algorithme de sélection des fonctions.
+6. Le renommage stratégique des fonctions optimise les coûts en gas et l'ordre d'exécution, de par les valeurs des empreintes.
 
 
 ## Introduction
 
-L'optimisation des coûts en Gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum. Chaque opération effectuée sur Ethereum a un coût en Gas, qui est payant.
+L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum. Chaque opération effectuée sur Ethereum a un coût en gas, qui est payant.
 
 **Rappel :**
 - Le **bytecode** représente un smart contract sur la blockchain sous forme d'une séquence d'hexadécimaux.
@@ -59,7 +57,7 @@ L'optimisation des coûts en Gas est un enjeu clé dans le développement de con
 - Un compilateur traduit ce code source en bytecode exécutable par l'EVM et fournit des éléments tels que l'ABI (*interface binaire d'application*).
 - Une **ABI** définit comment les fonctions d'un contrat doivent être appelées et les données échangées, en spécifiant les types de données des arguments et la signature des fonctions.
 
-Dans cet article, nous allons explorer comment le simple fait de nommer vos fonctions peut influencer les coûts en Gas associés à votre contrat.
+Dans cet article, nous allons explorer comment le simple fait de nommer vos fonctions peut influencer les coûts en gas associés à votre contrat.
 
 Nous discuterons également de diverses stratégies d'optimisation, de l'ordre des hash de signatures aux astuces de renommage des fonctions, afin de réduire les coûts associés aux interactions avec vos contrats.
 
@@ -629,33 +627,33 @@ Cette fois-ci, je ne reproduit pas les opcodes et le diagramme associé, afin de
 
 ```c
 // [tag 1]
-// 1 Gas (JUMPDEST)
-if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) Gas
-  if( selector >= 0xB9E9C35C) {  // 22 = (3+3+3+3+10) Gas
-    if( selector == 0xB9E9C35C) { goto storeF }  // 22 = (3+3+3+3+10) Gas
-    if( selector == 0xC534BE7A) { goto storeA }  // 22 = (3+3+3+3+10) Gas
-    if( selector == 0xE45F4CF5) { goto storeE }  // 22 = (3+3+3+3+10) Gas
+// 1 gas (JUMPDEST)
+if( selector >= 0x799EBD70) {  // 22 = (3+3+3+3+10) gas
+  if( selector >= 0xB9E9C35C) {  // 22 = (3+3+3+3+10) gas
+    if( selector == 0xB9E9C35C) { goto storeF }  // 22 = (3+3+3+3+10) gas
+    if( selector == 0xC534BE7A) { goto storeA }  // 22 = (3+3+3+3+10) gas
+    if( selector == 0xE45F4CF5) { goto storeE }  // 22 = (3+3+3+3+10) gas
     revert()
   }
   // [tag 15]
-  // 1 Gas (JUMPDEST)
-  if( selector == 0x799EBD70) { goto storeG }  // 22 = (3+3+3+3+10) Gas
-  if( selector == 0x9AE4B7D0) { goto storeB }  // 22 = (3+3+3+3+10) Gas
-  if( selector == 0xB87C712B) { goto storeD }  // 22 = (3+3+3+3+10) Gas
+  // 1 gas (JUMPDEST)
+  if( selector == 0x799EBD70) { goto storeG }  // 22 = (3+3+3+3+10) gas
+  if( selector == 0x9AE4B7D0) { goto storeB }  // 22 = (3+3+3+3+10) gas
+  if( selector == 0xB87C712B) { goto storeD }  // 22 = (3+3+3+3+10) gas
   revert()
 } else {
   // [tag 14]
-  // 1 Gas (JUMPDEST)
-  if( selector >= 0x4CF56E0C) { // 22 = (3+3+3+3+10) Gas
-    if( selector == 0x4CF56E0C) { goto storeC }  // 22 = (3+3+3+3+10) Gas
-    if( selector == 0x6EC51CF6) { goto storeJ }  // 22 = (3+3+3+3+10) Gas
-    if( selector == 0x75A64B6D) { goto storeH }  // 22 = (3+3+3+3+10) Gas
+  // 1 gas (JUMPDEST)
+  if( selector >= 0x4CF56E0C) { // 22 = (3+3+3+3+10) gas
+    if( selector == 0x4CF56E0C) { goto storeC }  // 22 = (3+3+3+3+10) gas
+    if( selector == 0x6EC51CF6) { goto storeJ }  // 22 = (3+3+3+3+10) gas
+    if( selector == 0x75A64B6D) { goto storeH }  // 22 = (3+3+3+3+10) gas
     revert()
   }
   // [tag 16]
-  // 1 Gas (JUMPDEST)
-  if( selector == 0x183301E7) { goto storeI }    // 22 = (3+3+3+3+10) Gas
-  if( selector == 0x2E64CEC1) { goto retrieve }  // 22 = (3+3+3+3+10) Gas
+  // 1 gas (JUMPDEST)
+  if( selector == 0x183301E7) { goto storeI }    // 22 = (3+3+3+3+10) gas
+  if( selector == 0x2E64CEC1) { goto retrieve }  // 22 = (3+3+3+3+10) gas
   revert()
 }
 ```
@@ -665,13 +663,13 @@ On distingue mieux les articulations autour des différentes valeurs "pivots" :
 - Puis `0x4CF56E0C` & `0xB9E9C35C` en tant que valeurs de **seuils secondaires**.
 
 
-### Calcul des coûts en Gas
+### Calcul des coûts en gas
 
-J'ai pris pour référence toujours le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le coût en Gas de la sélection, selon que l'on ait une recherche linéaire ou fractionnée.
+J'ai pris pour référence toujours le code d'un contrat Solidity avec **11 fonctions éligibles** au "*function dispatcher*", afin d'estimer le coût en gas de la sélection, selon que l'on ait une recherche linéaire ou fractionnée.
 
-C'est uniquement le **coût de la sélection** dans le "_function dispatcher_" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme Gas, ni du code qui extrait l'empreinte de la fonction an allant chercher la donnée dans la zone `calldata`.
+C'est uniquement le **coût de la sélection** dans le "_function dispatcher_" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme gas, ni du code qui extrait l'empreinte de la fonction an allant chercher la donnée dans la zone `calldata`.
 
-L'estimation des coûts en Gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
+L'estimation des coûts en gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
@@ -689,7 +687,7 @@ Les **opcodes** en jeu pour ce qui nous concerne sont les suivants :
 | `JUMPI`            | 10  | Conditionally alter the program counter |
 
 
-Ce qui m'a permit d'estimer les coûts de recherche en Gas pour chaque fonction, pour les [valeur de runs](#seuils) `200` et `1000` amenant ainsi un traitement différent, séquentiel pour `200 runs` et "fraction" pour `1000 runs`.
+Ce qui m'a permit d'estimer les coûts de recherche en gas pour chaque fonction, pour les [valeur de runs](#seuils) `200` et `1000` amenant ainsi un traitement différent, séquentiel pour `200 runs` et "fraction" pour `1000 runs`.
 
 
 | Signatures        | Empreintes        | Gas (linear)   | Gas (splited)   |
@@ -795,16 +793,16 @@ Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/ye
 
 ![](g_tx_data.png)
 
-- `Gtxdatazero` coûte **4 Gas** pour chaque octet nul en transaction.
-- `Gtxdatanonzero` coûte **16 Gas** pour chaque octet non-nul, soit **4 fois plus cher**.
+- `Gtxdatazero` coûte **4 gas** pour chaque octet nul en transaction.
+- `Gtxdatanonzero` coûte **16 gas** pour chaque octet non-nul, soit **4 fois plus cher**.
 
-Ainsi, chaque fois qu'un octet est à zéro (`00`) est utilisé dans `msg.data` en lieu et place d'un octet non-nul, il économise **12 Gas**.
+Ainsi, chaque fois qu'un octet est à zéro (`00`) est utilisé dans `msg.data` en lieu et place d'un octet non-nul, il économise **12 gas**.
 
 Cette particularité des EVMs a également un impact sur la consommation d'autres opcodes comme `Gsset` et `Gsreset`.
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour empreinte `00001878` au lieu de `d27b3841`.
 
-Les deux octets de poids forts de l'empreinte (`0000`) feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction comme vu plus haut, mais permettra également de consommer **moins de Gas** lors de la transaction (**40** au lieu de **64**).
+Les deux octets de poids forts de l'empreinte (`0000`) feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction comme vu plus haut, mais permettra également de consommer **moins de gas** lors de la transaction (**40** au lieu de **64**).
 
 En voici d'autres exemples :
 
@@ -814,7 +812,7 @@ En voici d'autres exemples :
 | `mint_540(uint256)`    | 00009d1c            | `mint(uint256)`    | a0712d68  |
 | `b_1Y()`               | 00008e0c            | `b()`              | 4df7e3d0  |
 
-Idéalement, il faudrait trouver des empreintes avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 Gas**.
+Idéalement, il faudrait trouver des empreintes avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 gas**.
 
 Comme par exemple **`deposit278591A(uint)`** dont l'empreinte est **`00000070`**.
 
@@ -828,17 +826,17 @@ J'ai ainsi réaliser **Select0r**, un outil écrit en **Rust** qui permettra à 
 
 ## Conclusions
 
-- L'optimisation des coûts en Gas est un aspect essentiel de la conception de contrats intelligents efficaces sur Ethereum.
+- L'optimisation des coûts en gas est un aspect essentiel de la conception de contrats intelligents efficaces sur Ethereum.
 
 - En faisant attention aux détails tels que l'ordre des signatures de fonction, le nombre de zéros en début de hash, l'ordre de traitement des fonctions, et le renommage des fonctions, vous pouvez réduire de manière significative les coûts associés à votre contrat.
 
-- **Attention** toutefois la convivialité et la lisibilité de votre code, peut en être réduite.
+- **Attention** toutefois la convivialité et la lisibilité de votre code peut en être réduite.
 
-- L'optimisation pour l'exécution n'est pas forcément nécessaire pour les fonctions dites d'administration, ou celle trop peu fréquement appelées.
+- L'optimisation pour l'exécution n'est pas forcément nécessaire pour les fonctions dites d'administration, ou celles trop peu fréquement appelées.
 
 - Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
-En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en Gas.
+En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en gas.
 
 
 --------
