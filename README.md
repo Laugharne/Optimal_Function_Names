@@ -30,7 +30,7 @@
 		- [Optimisation à la transaction](#optimisation-%C3%A0-la-transaction)
 		- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
-	- [Liens](#liens)
+	- [Ressources additionnelles](#ressources-additionnelles)
 
 <!-- /TOC -->
 
@@ -849,7 +849,7 @@ Crédits : **Franck Maussand franck@maussand.net**
 
 
 
-## Liens
+## Ressources additionnelles
 
 - Fonction de hachage
   - 🇫🇷 [Fonction de hachage — Wikipédia](https://fr.wikipedia.org/wiki/Fonction_de_hachage)
@@ -890,4 +890,6 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [Web3 Hacking: Paradigm CTF 2022 Writeup](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5)
   - 🇬🇧 [paradigm-ctf-2022/hint-finance at main · paradigmxyz/paradigm-ctf-2022 · GitHub](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance)
   - 🇬🇧 [GitHub - Laugharne/solc_runs_dispatcher](https://github.com/Laugharne/solc_runs_dispatcher)
+
+
 
