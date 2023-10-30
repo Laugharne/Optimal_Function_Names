@@ -883,6 +883,7 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [Compiler Explorer](https://godbolt.org/)
   - 🇬🇧 [Solidity Optimize Name](https://emn178.github.io/solidity-optimize-name/)
   - 🇬🇧 [Ethereum Signature Database](https://www.4byte.directory/)
+  - 🇬🇧 [GitHub - shazow/whatsabi: Extract the ABI (and other metadata) from Ethereum bytecode, even without source code.](https://github.com/shazow/whatsabi)
 
 - Divers
   - 🇬🇧 [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
@@ -890,6 +891,7 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [Web3 Hacking: Paradigm CTF 2022 Writeup](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5)
   - 🇬🇧 [paradigm-ctf-2022/hint-finance at main · paradigmxyz/paradigm-ctf-2022 · GitHub](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance)
   - 🇬🇧 [GitHub - Laugharne/solc_runs_dispatcher](https://github.com/Laugharne/solc_runs_dispatcher)
+  - 🇬🇧 [WhatsABI? with Shazow - YouTube](https://www.youtube.com/watch?v=sfgassm8SKw)
 
 
 
