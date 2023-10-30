@@ -814,7 +814,7 @@ En voici d'autres exemples :
 
 Idéalement, il faudrait trouver des empreintes avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 gas**.
 
-Comme par exemple **`deposit278591A(uint)`** dont l'empreinte est **`00000070`**.
+Comme par exemple **`deposit278591A(uint)`** dont l'empreinte est **`00000070`** ou bien **`deposit_3VXa0(uint256)`** (**`0000007e`**).
 
 
 ### Select0r
