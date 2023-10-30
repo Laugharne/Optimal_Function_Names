@@ -821,7 +821,7 @@ Comme par exemple **`deposit278591A(uint)`** dont l'empreinte est **`00000070`**
 
 J'ai ainsi réaliser **Select0r**, un outil écrit en **Rust** qui permettra à votre guise de renommer vos fonctions afin d'en optimiser les appels.
 
-[GitHub - Laugharne/select0r](https://github.com/Laugharne/select0r/tree/main)
+[**GitHub - Laugharne/select0r**](https://github.com/Laugharne/select0r/tree/main)
 
 
 ## Conclusions
