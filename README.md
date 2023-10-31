@@ -807,14 +807,16 @@ Les deux octets de poids forts de l'empreinte (`0000`) feront non seulement remo
 En voici d'autres exemples :
 
 | Signatures (optimal)   | Empreintes (optimal) | Signatures         | Empreintes |
-| ---------------------- | ------------------- | ------------------ | --------- |
-| `deposit_ps2(uint256)` | 0000fee6            | `deposit(uint256)` | b6b55f25  |
-| `mint_540(uint256)`    | 00009d1c            | `mint(uint256)`    | a0712d68  |
-| `b_1Y()`               | 00008e0c            | `b()`              | 4df7e3d0  |
+| ---------------------- | -------------------- | ------------------ | ---------- |
+| `deposit_ps2(uint256)` | 0000fee6             | `deposit(uint256)` | b6b55f25   |
+| `mint_540(uint256)`    | 00009d1c             | `mint(uint256)`    | a0712d68   |
+| `b_1Y()`               | 00008e0c             | `b()`              | 4df7e3d0   |
 
-Idéalement, il faudrait trouver des empreintes avec **trois octets** de poids forts à zéro, permettant ainsi de ne consommer que **28 gas**.
+Utiliser des empreintes avec **trois octets** de poids forts à zéro, permettent ainsi de ne consommer que **28 gas**.
 
 Comme par exemple **`deposit278591A(uint)`** et **`deposit_3VXa0(uint256)`** dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
+
+Par contre, il ne peut y avoir qu'une seule fonction élligible par contrat qui puisse avoir comme empreinte `00000000`comme `execute_44g58pv()` !
 
 
 ### Select0r
