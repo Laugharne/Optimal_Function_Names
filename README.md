@@ -812,11 +812,11 @@ En voici d'autres exemples :
 | `mint_540(uint256)`    | 00009d1c             | `mint(uint256)`    | a0712d68   |
 | `b_1Y()`               | 00008e0c             | `b()`              | 4df7e3d0   |
 
-Utiliser des empreintes avec **trois octets** de poids forts à zéro, permettent ainsi de ne consommer que **28 gas**.
+Utiliser des empreintes avec **trois octets** de poids forts à zéro, permet ainsi de ne consommer que **28 gas**.
 
 Comme par exemple **`deposit278591A(uint)`** et **`deposit_3VXa0(uint256)`** dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
-Par contre, il ne peut y avoir qu'une seule fonction élligible par contrat qui puisse avoir comme empreinte `00000000`comme `execute_44g58pv()` !
+Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte `00000000` ne permettant de consommer que **16 gas** avec pour illustration, la signature suivante : `execute_44g58pv()`.
 
 
 ### Select0r
