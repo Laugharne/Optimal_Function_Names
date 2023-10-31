@@ -427,32 +427,32 @@ contract Storage {
     uint256 numberE;
 
 
-    // identity : C534BE7A
+    // selector : C534BE7A
     function storeA(uint256 num) public {
         numberA = num;
     }
 
-    // identity : 9AE4B7D0
+    // selector : 9AE4B7D0
     function storeB(uint256 num) public {
         numberB = num;
     }
 
-    // identity : 4CF56E0C
+    // selector : 4CF56E0C
     function storeC(uint256 num) public {
         numberC = num;
     }
 
-    // identity : B87C712B
+    // selector : B87C712B
     function storeD(uint256 num) public {
         numberD = num;
     }
 
-    // identity : E45F4CF5
+    // selector : E45F4CF5
     function storeE(uint256 num) public {
         numberE = num;
     }
 
-    // identity : 2E64CEC1
+    // selector : 2E64CEC1
     function retrieve() public view returns (uint256) {
         return Multiply( numberA, numberB, numberC, numberD);
     }
