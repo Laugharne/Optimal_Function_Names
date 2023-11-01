@@ -7,14 +7,14 @@
 	- [Introduction](#introduction)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 	- [Fonctionnement](#fonctionnement)
-	- [Empreintes et Signatures des fonctions](#empreintes-et-signatures-des-fonctions)
+	- [Empreintes et signatures des fonctions](#empreintes-et-signatures-des-fonctions)
 		- [En Solidity](#en-solidity)
 			- [Rappel sur les visibilités des fonctions Solidity](#rappel-sur-les-visibilit%C3%A9s-des-fonctions-solidity)
 			- [À la compilation](#%C3%A0-la-compilation)
 				- [Code généré](#code-g%C3%A9n%C3%A9r%C3%A9)
 				- [Diagramme](#diagramme)
 				- [Ordre d'évaluation](#ordre-d%C3%A9valuation)
-				- [getter automatique](#getter-automatique)
+				- [Getter automatique](#getter-automatique)
 		- [En Yul](#en-yul)
 	- [Une complexité croissante !](#une-complexit%C3%A9-croissante-)
 		- [Influence du niveau de runs](#influence-du-niveau-de-runs)
@@ -40,15 +40,15 @@
 
 1. L'optimisation des coûts en gas est crucial pour les contrats intelligents sur Ethereum.
 2. Le "*function dispatcher*" gère l'exécution des fonctions dans les smart contracts pour les EVMs.
-3. Le compilateur Solidity génère le "*function dispatcher*" des fonctions exposées publiquement, en Yul cela doit être coder.
-4. Les signatures, hashs et empreintes des fonctions sont déterminées par leurs noms et types de paramètres.
+3. Le compilateur Solidity génère le "*function dispatcher*" des fonctions exposées publiquement, alors qu'en Yul cela doit être codé.
+4. Les signatures, hashs et empreintes des fonctions sont déterminés par leurs noms et types de paramètres.
 5. Le réglage d'optimisation du compilateur et le nombre de fonctions impactent l'algorithme de sélection des fonctions.
-6. Le renommage stratégique des fonctions optimise les coûts en gas et l'ordre d'exécution, de par les valeurs des empreintes.
+6. Le renommage stratégique des fonctions optimise les coûts en gas et l'ordre d'interprétation, de par les valeurs des empreintes.
 
 
 ## Introduction
 
-L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum. Chaque opération effectuée sur Ethereum a un coût en gas, qui est payant.
+L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum. Chaque opération effectuée sur Ethereum a un coût en gas.
 
 **Rappel :**
 - Le **bytecode** représente un smart contract sur la blockchain sous forme d'une séquence d'hexadécimaux.
@@ -70,7 +70,7 @@ Cette article se base sur :
 
 Les concepts suivants seront abordés :
 - Le "*function dispatcher*" : le mécanisme de sélection d'une fonction dans un contrat.
-- L'empreinte : l'identitifiant d'une fonction au sein de l'EVM.
+- L'empreinte : l'identitifiant numérique d'une fonction au sein de l'EVM.
 - Et le nom de fonction en tant qu'argument (du côté de l'appelant).
 
 
@@ -83,18 +83,18 @@ En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des a
 
 ## Fonctionnement
 
-Lorsque vous interagissez avec un contrat intelligent en utilisant une application ou une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
+Lorsque vous interagissez avec un contrat intelligent via une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée et exécutée.
 
-L'empreinte de la fonction est récupérée dans le `calldata`, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
+L'empreinte de la fonction est récupérée dans le `calldata` lors de l'ecécution du conttrat, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
 
 Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else` tel qu'on le trouve dans de nombreux autres langages de programmation.
 
 
-## Empreintes et Signatures des fonctions
+## Empreintes et signatures des fonctions
 
 La **signature** d'une fonction tel qu'employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses types de paramètres (sans type de retour ni espaces)
 
-L'**empreinte** ("selector" dans les publications anglo-saxonnes) est l'empreinte même de la fonction qui la rend "unique" et identifiable, dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧).
+L'**empreinte** ("selector" dans les publications anglo-saxonnes) est l'empreinte même de la fonction qui la rend "unique" et identifiable. Dans le cas de Solidity, il s'agit des 4 octets de poids fort (32 bits) du résultat du hachage de la signature de la fonction avec l'algorithme [**Keccak-256**](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)  (🇬🇧).
 
 Cela selon les [**spécifications de l'ABI en Solidity**](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector)  (🇬🇧).
 
@@ -102,7 +102,7 @@ Je précise à nouveau que je parle de l'empreinte pour le compilateur **solc** 
 
 Si les types des paramètres sont pris en compte, c'est pour différencier les fonctions qui auraient le même nom, mais des paramètres différents, comme pour la méthode `safeTransferFrom` des tokens  [**ERC721**](https://eips.ethereum.org/EIPS/eip-721)  (🇬🇧).
 
-Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare, mais existant malgré plus de 4 milliards de possibilités (2^32).
+Cependant, le fait que l'on ne garde que **quatre octets** pour l'empreinte, implique de potentiels **risques de collisions de hash** entre deux fonctions, risque rare mais existant malgré plus de 4 milliards de possibilités (2^32).
 
 Comme en atteste le site [**Ethereum Signature Database**](https://www.4byte.directory/signatures/?bytes4_signature=0xcae9ca51)  (🇬🇧) avec l'exemple suivant :
 
@@ -121,7 +121,7 @@ TypeError: Function signature hash collision for approveAndCall(address,uint256,
    | ^ (Relevant source part starts here and spans across multiple lines).
 ```
 
-Mais n'en demeure pas moins problématique : Voir le challenge [**Hint-finance**](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance), au [**Web3 Hacking: Paradigm CTF 2022**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
+Mais cela n'en demeure pas moins problématique : Voir le challenge [**Hint-finance**](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance), au [**Web3 Hacking: Paradigm CTF 2022**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
 
 
 ### En Solidity
@@ -134,7 +134,7 @@ function square(uint32 num) public pure returns (uint32) {
 }
 ```
 
-Les signature, hash et empreinte suivantes :
+Les signature, hash et empreintes suivants :
 
 | Fonction  | square(uint32 num) public pure returns (uint32)                    |
 | --------- | ------------------------------------------------------------------ |
@@ -186,7 +186,7 @@ contract MyContract {
 
 #### À la compilation
 
-Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et Empreintes suivantes :
+Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et empreintes suivantes :
 
 | Fonctions                                              | Signatures                  | Keccak            | Empreintes      |
 | ------------------------------------------------------ | --------------------------- | ----------------- | -------------- |
@@ -197,14 +197,14 @@ Si nous reprenons le précédent code utilisé en exemple, nous obtenons les sig
 
 (*Les hashs issus du Keccak ont été tronqués volontairement*)
 
-Si on examine l'ABI généré lors de la compilation, la fonction `setInternalValue()` n'apparait pas, ce qui est normal, sa visibilité étant `internal` (voir plus haut)
+Si on examine l'ABI généré lors de la compilation, la fonction `setInternalValue()` n'apparaît pas, ce qui est normal, sa visibilité étant `internal`. (voir plus haut)
 
 On notera dans les données de l'ABI, la référence à la donnée du storage `value` qui est `public` (on y reviendra plus loin)
 
 
 ##### Code généré
 
-Voici en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de solidity : 0.8.13)
+Voici, en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de Solidity : 0.8.13)
 
 ```yul
 tag 1
@@ -265,12 +265,12 @@ Sous forme de diagramme, on comprend mieux le mécanisme de sélection similaire
 | 3                  | **2**              | `55241077`  | `setValue(uint256)`            |
 | 4                  | **4**              | `E778DDC1`  | `getInternalValue()`           |
 
-En effet, les évaluations des Empreintes de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
+En effet, les évaluations des empreintes de fonctions sont ordonnées par un tri ascendant sur leurs valeurs.
 
 `20965255` < `3FA4F245` < `55241077` < `E778DDC1`
 
 
-##### getter() automatique
+##### Getter automatique
 
 La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la donnée publique `value`, elle est générée par le compilateur. En solidty, le compilateur fournit automatiquement un getter public à toute variable de storage publique.
 
@@ -344,9 +344,9 @@ tag getValue_2
   RETURN 
 ```
 
-Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()` mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusionner le code des deux fonctions.
+Démontrant ainsi l'inutilité d'avoir la variable `value` avec l'attribut `public` de concert avec la fonction `getValue()`, mais également une faiblesse du compilateur de Solidity `solc` qui ne peut fusionner le code des deux fonctions.
 
-Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity. Dont on peut résumé le contenu en quatre points essentiels.
+Voici d'ailleurs un lien, pour ceux qui voudraient aller plus loin, [**un article détaillé**](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d) (🇬🇧) sur les `automatic storage getters` en Solidity.
 
 
 ### En Yul
@@ -460,7 +460,8 @@ contract Storage {
 
 }
 ```
-Ici les variables de storage sont internal (attribut par défaut en solidity) aucun getter automatique ne sera donc ajouté par le compilateur.
+
+Ici les variables de `storage` sont `internal` (attribut par défaut en Solidity) aucun getter automatique ne sera donc ajouté par le compilateur.
 
 Et nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les **6 fonctions `public`** suivantes avec leur empreintes dédiées :
 
@@ -591,26 +592,26 @@ Les opcodes et le flux d'exécution avec `--optimize-runs 300`, ne sont plus les
 
 ![](functions_split_dispatcher_diagram.png)
 
-On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`. Diminuant ainsi la consommation pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
+On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`, diminuant ainsi la consommation pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
 
 
 ### Influence du niveau de runs
 
-Seulement **4 tests** pour les fonctions `storeB(uint256)` et `storeE(uint256)`, au lieu de respectivement **3 tests** et **6 tests** avec le précédent algorithme.
+Seulement **4 tests** pour les fonctions `storeB(uint256)` et `storeE(uint256)`, au lieu de, respectivement, **3 tests** et **6 tests** avec le précédent algorithme.
 
-La détermination du déclenchement de ce type d'optimisation est un peu délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
+La détermination du déclenchement de ce type d'optimisation est plus délicat, le seuil du nombre de fonctions se trouve être 6 pour le déclencher avec `--optimize-runs 284`, donnant **deux tranches** de 3 séries de tests linéaires.
 
-Lorsque le nombre de fonctions est inférieur à 4, le processus de sélection se fait par une recherche linéaire.
-
-En revanche, à partir de cinq fonctions, le compilateur fractionne le traitement en fonction de son paramètre d'optimisation.
+Lorsque le nombre de fonctions est inférieur à 4, le processus de sélection se fait par une recherche linéaire. En revanche, à partir de cinq fonctions, le compilateur fractionne le traitement en fonction de son paramètre d'optimisation.
 
 Des [tests sur des contrats basiques](https://github.com/Laugharne/solc_runs_dispatcher) comportant de 4 à 15 fonctions, avec des optimisations de 200 à 1000 exécutions, ont démontré ces seuils.
 
-Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fractions de séquences de tests.
+Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fractions de séquences de tests en indiquant le nombre de recherches linéaires.
+
+**Relevé du nombre de fractions en fonction du runs level et de la quantité de fonctions**
 
 ![](func_runs.png)
 
-(*F : Nbr functions / R : Runs level*)
+( *F : Nbr functions / R : Runs level* )
 
 Ces seuils (liés à des valeurs de `runs`) sont-t-il susceptibles d'évoluer au fil des versions du compilateur `solc` ?
 
@@ -619,12 +620,12 @@ Ces seuils (liés à des valeurs de `runs`) sont-t-il susceptibles d'évoluer au
 
 Détaillons un exemple pour le cas d'un contrat avec 11 fonctions pour visualiser l'impact sur la consommation en gas.
 
-Avec **11 fonctions** éligibles, et un niveau de `runs` supérieur `--optimize-runs 1000`  on passe de **deux tranches** (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
+Avec **11 fonctions** éligibles, et un niveau de `runs` supérieur `--optimize-runs 1000`  on passe de **deux tranches** de séries de tests (une de 6 + une de 5) à **4 tranches** (trois tranches de 3 + une de 2)
 
 
 ### Pseudo-code
 
-Cette fois-ci, je ne reproduit pas les opcodes et le diagramme associé, afin de clarifier l'explication, voici le flux d'exécution sous forme de *pseudo-code*, semblable à du code en langage **C**.
+Cette fois-ci, je ne reproduis pas les opcodes et le diagramme associé, afin de clarifier l'explication, voici le flux d'exécution sous forme de *pseudo-code*, semblable à du code en langage **C**.
 
 ```c
 // [tag 1]
@@ -670,7 +671,7 @@ J'ai pris pour référence toujours le code d'un contrat Solidity avec **11 fonc
 
 C'est uniquement le **coût de la sélection** dans le "*function dispatcher*" et non l'exécution des fonctions qui est estimé. Nous ne nous préoccupons pas de ce que fait la fonction elle-même ni de ce qu'elle consomme comme gas, ni du code qui extrait l'empreinte de la fonction an allant chercher la donnée dans la zone `calldata`.
 
-L'estimation des coûts en gas des opcodes utilisés ont été réalisés en m'aidant des sites suivants :
+L'estimation des coûts en gas des opcodes utilisés a été réalisée en m'aidant des sites suivants :
 - [**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 - [**EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference**](https://www.evm.codes/?fork=shanghai) (🇬🇧)
 
@@ -688,7 +689,7 @@ Les **opcodes** en jeu pour ce qui nous concerne sont les suivants :
 | `JUMPI`            | 10  | Conditionally alter the program counter |
 
 
-Ce qui m'a permit d'estimer les coûts de recherche en gas pour chaque fonction, pour les [valeur de runs](#seuils) `200` et `1000` amenant ainsi un traitement différent, séquentiel pour `200 runs` et "fraction" pour `1000 runs`.
+Ce qui m'a permis d'estimer les coûts en gas, de recherche pour chaque fonction, pour les [valeur de runs](#seuils) `200` et `1000` amenant ainsi un traitement différent, séquentiel pour `200 runs` et "fractionné" pour `1000 runs`.
 
 
 | Signatures        | Empreintes        | Gas (linear)   | Gas (splited)   |
@@ -745,7 +746,7 @@ Suivant l'algorithme utilisé par le compilateur Solidity pour générer le "*fu
 | **11** | `storeE(uint256)` | `E45F4CF5` |
 
 
-Le nombre de tests et la complexité du processus est proportionnelle au nombre de fonctions, en [**O(n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques).
+Le nombre de tests et la complexité du processus sont proportionnels au nombre de fonctions, en [**O(n)**](https://fr.wikipedia.org/wiki/Complexit%C3%A9_en_temps#Liste_de_complexit%C3%A9s_en_temps_classiques).
 
 
 ### Recherche fractionnée (runs = 1000)
@@ -770,9 +771,9 @@ Il ne s'agit pas d'une [**recherche dichotomique**](https://fr.wikipedia.org/wik
 
 ## Les optimisations
 
-Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquance d'utilisation) celles-ci lors de leurs appels ne coûteront pas la même chose en fonction de leurs signatures (et par là même de leurs noms). On voit clairement que tel quel le coût de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
+Si on part sur le principe que les fonctions sont appelées de manière équitable (à la même fréquence d'utilisation) celles-ci, lors de leurs appels ne coûteront pas la même chose en fonction de leurs signatures (et par là même de leurs noms). On voit clairement que tel quel le coût de la sélection d'un appel vers ces fonctions, quel que soit l'algorithme, est très hétérogène et s'il peut être estimé, il ne peut être imposé.
 
-Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes, vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de l'appel de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
+Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes (par exemple) vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de la sélection de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
 
 ### Optimisation à l'exécution
@@ -783,12 +784,12 @@ La valeur inférieure de la nouvelle empreinte obtenue fera ainsi remonter en pr
 
 Cette optimisation peut être importante pour les contrats intelligents très complexes, car elle permet de réduire le temps nécessaire pour rechercher et sélectionner la bonne fonction à appeler, ce qui se traduit par des économies de gaz et des performances améliorées sur la blockchain Ethereum.
 
-Le fait que la recherche soit fractionnée au lieu de linéaire, complique un peu les choses, dans le sens ou en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer pour choisir les nouvelles signatures en fonction de l'ordre désiré.
+Le fait que la recherche soit fractionnée au lieu de linéaire, complique un peu les choses, dans le sens où en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer pour choisir les nouvelles signatures en fonction de l'ordre désiré.
 
 
 ### Optimisation à la transaction
 
-Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez généralement des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
+Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
 
 Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 
@@ -803,7 +804,7 @@ Cette particularité des EVMs a également un impact sur la consommation d'autre
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_Y7i(uint32)` aura pour empreinte `00001878` au lieu de `d27b3841`.
 
-Les deux octets de poids forts de l'empreinte (`0000`) feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction comme vu plus haut, mais permettra également de consommer **moins de gas** lors de la transaction (**40** au lieu de **64**).
+Les deux octets de poids forts de l'empreinte (`0000`) feront non seulement remonter en priorité le **traitement de l'appel** de cette fonction comme vu plus haut, mais permettra également de consommer **moins de gas** lors de l'extraction des données (**40** au lieu de **64**).
 
 En voici d'autres exemples :
 
@@ -817,12 +818,12 @@ Utiliser des empreintes avec **trois octets** de poids forts à zéro, permet ai
 
 Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit278591A(uint)) et [**`deposit_3VXa0(uint256)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit_3VXa0(uint256)) dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
-Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** ne permettant de consommer que **16 gas** avec pour illustration, la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()).
+Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** permettant de ne consommer que **16 gas** avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()).
 
 
 ### Select0r
 
-J'ai ainsi réaliser **Select0r**, un outil écrit en **Rust** qui permettra à votre guise de renommer vos fonctions afin d'en optimiser les appels.
+J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira une liste de signatures alternatives bien moins couteuse en gas et AAAAAA
 
 [**GitHub - Laugharne/select0r**](https://github.com/Laugharne/select0r/tree/main)
 
@@ -854,22 +855,22 @@ Crédits : **Franck Maussand franck@maussand.net**
 
 ## Ressources additionnelles
 
-- Fonction de hachage
+- Fonction de hachage :
   - 🇫🇷 [Fonction de hachage — Wikipédia](https://fr.wikipedia.org/wiki/Fonction_de_hachage)
   - 🇬🇧 [Hash function - Wikipedia](https://en.wikipedia.org/wiki/Hash_function)
 
-- Keccak
+- Keccak :
   - 🇫🇷 [SHA-3 — Wikipédia](https://fr.wikipedia.org/wiki/SHA-3)
   - 🇬🇧 [SHA-3 - Wikipedia](https://en.wikipedia.org/wiki/SHA-3)
   - 🇬🇧 [Difference Between SHA-256 and Keccak-256 - GeeksforGeeks](https://www.geeksforgeeks.org/difference-between-sha-256-and-keccak-256/)
 
-- Recherche dichotomique
+- Recherche dichotomique :
   - 🇫🇷 [Recherche dichotomique — Wikipédia](https://fr.wikipedia.org/wiki/Recherche_dichotomique)
   - 🇬🇧 [Binary search algorithm - Wikipedia](https://en.wikipedia.org/wiki/Binary_search_algorithm)
   - 🇫🇷 [Calculer la performance d'un algorithme avec la notation Big-O](https://buzut.net/cours/computer-science/time-complexity)
   - 🇬🇧 [Big O notation - Wikipedia](https://en.wikipedia.org/wiki/Big_O_notation)
 
-- Reférences
+- Reférences :
   - 🇬🇧 [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf)
   - 🇬🇧 [Opcodes for the EVM](https://ethereum.org/en/developers/docs/evm/opcodes/)
   - 🇬🇧 [EVM Codes - An Ethereum Virtual Machine Opcodes Interactive Reference](https://www.evm.codes/?fork=shanghai)
@@ -880,7 +881,7 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [Using the Compiler — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/latest/using-the-compiler.html)
   - 🇬🇧 [The Optimizer — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/internals/optimizer.html)
 
-- Outils
+- Outils :
   - 🇬🇧 [GitHub - Laugharne/select0r](https://github.com/Laugharne/select0r/tree/main)
   - 🇬🇧 [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
   - 🇬🇧 [Compiler Explorer](https://godbolt.org/)
@@ -888,7 +889,7 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [Ethereum Signature Database](https://www.4byte.directory/)
   - 🇬🇧 [GitHub - shazow/whatsabi: Extract the ABI (and other metadata) from Ethereum bytecode, even without source code.](https://github.com/shazow/whatsabi)
 
-- Divers
+- Divers :
   - 🇬🇧 [Function Dispatching | Huff Language](https://docs.huff.sh/tutorial/function-dispatching/#linear-dispatching)
   - 🇬🇧 [Solidity’s Cheap Public Face](https://medium.com/coinmonks/soliditys-cheap-public-face-b4e972e3924d)
   - 🇬🇧 [Web3 Hacking: Paradigm CTF 2022 Writeup](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5)
