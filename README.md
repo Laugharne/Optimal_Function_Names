@@ -138,10 +138,11 @@ Les signature, hash et empreinte suivantes :
 
 | Fonction  | square(uint32 num) public pure returns (uint32)                    |
 | --------- | ------------------------------------------------------------------ |
-| Signature | `square(uint32)`                                                   |
+| Signature | `square(uint32)` (*1*)                                             |
 | Hash      | `d27b38416d4826614087db58e4ea90ac7199f7f89cb752950d00e21eb615e049` |
 | Identité  | `d27b3841`                                                         |
 
+(*1*) : *Keccak-256 online calculator : [`square(uint32)`](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=square(uint32))*
 
 En Solidity, le "*function dispatcher*" est généré par le compilateur, inutile donc de se charger du codage de cette tâche complexe. 
 
@@ -814,9 +815,9 @@ En voici d'autres exemples :
 
 Utiliser des empreintes avec **trois octets** de poids forts à zéro, permet ainsi de ne consommer que **28 gas**.
 
-Comme par exemple **`deposit278591A(uint)`** et **`deposit_3VXa0(uint256)`** dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
+Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit278591A(uint)) et [**`deposit_3VXa0(uint256)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit_3VXa0(uint256)) dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
-Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte `00000000` ne permettant de consommer que **16 gas** avec pour illustration, la signature suivante : `execute_44g58pv()`.
+Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** ne permettant de consommer que **16 gas** avec pour illustration, la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()).
 
 
 ### Select0r
