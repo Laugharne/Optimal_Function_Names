@@ -64,13 +64,13 @@ Nous discuterons également de diverses stratégies d'optimisation, de l'ordre d
 **Précisions :**
 
 Cette article se base sur :
-1. Du code **solidity** (0.8.13, 0.8.17, 08.20, 0.8.22)
+1. Du code **solidity** (0.8.13, 0.8.17, 0.8.20, 0.8.22)
 2. Compilé avec le compilateur `solc`
 3. Pour des **EVMs** sur **Ethereum**
 
 Les concepts suivants seront abordés :
-- Le "*function dispatcher*" : le mécanisme de sélection d'une fonction dans un contrat.
 - L'empreinte : l'identitifiant numérique d'une fonction au sein de l'EVM.
+- Le "*function dispatcher*" : le mécanisme de sélection d'une fonction dans un contrat.
 - Et le nom de fonction en tant qu'argument (du côté de l'appelant).
 
 
