@@ -28,7 +28,7 @@
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation lors de l'exécution](#optimisation-lors-de-lex%C3%A9cution)
 		- [Optimisation à la transaction](#optimisation-%C3%A0-la-transaction)
-		- [Select0r](#select0r)
+	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
 
@@ -814,14 +814,14 @@ En voici d'autres exemples :
 | `mint_540(uint256)`    | 00009d1c             | `mint(uint256)`    | a0712d68   |
 | `b_1Y()`               | 00008e0c             | `b()`              | 4df7e3d0   |
 
-Utiliser des empreintes avec **trois octets** de poids forts à zéro, permet ainsi de ne consommer que **28 gas**.
+De même pouvoir utiliser des empreintes avec **trois octets** de poids forts à zéro, permet de ne consommer que **28 gas**.
 
 Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit278591A(uint)) et [**`deposit_3VXa0(uint256)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit_3VXa0(uint256)) dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
 Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** permettant de ne consommer que **16 gas** avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()).
 
 
-### Select0r
+## Select0r
 
 J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira une liste de signatures alternatives moins couteuse en gas et permettant un ordonancement.
 
