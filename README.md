@@ -5,9 +5,9 @@
 - [Optimisation sur Ethereum : Faites la différence avec les noms de fonctions](#optimisation-sur-ethereum--faites-la-diff%C3%A9rence-avec-les-noms-de-fonctions)
 	- [Points clés](#points-cl%C3%A9s)
 	- [Introduction](#introduction)
+	- [Empreintes et signatures des fonctions](#empreintes-et-signatures-des-fonctions)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
 		- [Fonctionnement](#fonctionnement)
-		- [Empreintes et signatures des fonctions](#empreintes-et-signatures-des-fonctions)
 		- [En Solidity](#en-solidity)
 			- [Rappel sur les visibilités des fonctions Solidity](#rappel-sur-les-visibilit%C3%A9s-des-fonctions-solidity)
 			- [À la compilation](#%C3%A0-la-compilation)
@@ -26,7 +26,7 @@
 		- [Recherche linéaire runs = 200](#recherche-lin%C3%A9aire-runs--200)
 		- [Recherche fractionnée runs = 1000](#recherche-fractionn%C3%A9e-runs--1000)
 	- [Les optimisations](#les-optimisations)
-		- [Optimisation à l'exécution](#optimisation-%C3%A0-lex%C3%A9cution)
+		- [Optimisation lors de l'exécution](#optimisation-lors-de-lex%C3%A9cution)
 		- [Optimisation à la transaction](#optimisation-%C3%A0-la-transaction)
 		- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
@@ -74,23 +74,7 @@ Les concepts suivants seront abordés :
 - Et le nom de fonction en tant qu'argument (du côté de l'appelant).
 
 
-## Présentation du "function dispatcher"
-
-Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les smart contracts  (contrats intelligents) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une ABI.
-
-En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
-
-
-### Fonctionnement
-
-Lorsque vous interagissez avec un contrat intelligent via une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée.
-
-L'empreinte de la fonction est récupérée dans le `calldata` (*) lors de l'éxécution du contrat, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
-
-Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else`.
-
-
-### Empreintes et signatures des fonctions
+## Empreintes et signatures des fonctions
 
 La **signature** d'une fonction tel qu'employée avec les **EVMs** (Solidity) consiste en la concaténation de son nom et de ses types de paramètres (sans type de retour ni espaces)
 
@@ -122,6 +106,22 @@ TypeError: Function signature hash collision for approveAndCall(address,uint256,
 ```
 
 Mais cela n'en demeure pas moins problématique : Voir le challenge [**Hint-finance**](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance), au [**Web3 Hacking: Paradigm CTF 2022**](https://medium.com/amber-group/web3-hacking-paradigm-ctf-2022-writeup-3102944fd6f5) (🇬🇧)
+
+
+## Présentation du "function dispatcher"
+
+Le "*function dispatcher*" (ou gestionnaire de fonctions) dans les smart contracts  (contrats intelligents) écrits pour les **EVMs** est un élément du contrat qui permet de déterminer quelle fonction doit être exécutée lorsque quelqu'un interagit avec le contrat au travers d'une ABI.
+
+En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des appels aux fonctions d'un contrat intelligent. Il garantit que les bonnes fonctions sont appelées lorsque vous effectuez les bonnes actions sur le contrat.
+
+
+### Fonctionnement
+
+Lorsque vous interagissez avec un contrat intelligent via une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée.
+
+L'empreinte de la fonction est récupérée dans le `calldata` (*) lors de l'éxécution du contrat, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
+
+Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else`.
 
 
 ### En Solidity
@@ -776,7 +776,7 @@ Si on part sur le principe que les fonctions sont appelées de manière équitab
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes (par exemple) vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de la sélection de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
 
-### Optimisation à l'exécution
+### Optimisation lors de l'exécution
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_low(uint32)` aura pour empreinte `bde6cad1` au lieu de `d27b3841`.
 
