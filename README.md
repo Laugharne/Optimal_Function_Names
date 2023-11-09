@@ -26,7 +26,7 @@
 		- [Recherche linéaire runs = 200](#recherche-lin%C3%A9aire-runs--200)
 		- [Recherche fractionnée runs = 1000](#recherche-fractionn%C3%A9e-runs--1000)
 	- [Les optimisations](#les-optimisations)
-		- [Optimisation des couts d'exécution](#optimisation-des-couts-dex%C3%A9cution)
+		- [Optimisation des coûts d'exécution](#optimisation-des-co%C3%BBts-dex%C3%A9cution)
 		- [Optimisation des couts intrinsèques](#optimisation-des-couts-intrins%C3%A8ques)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
@@ -781,7 +781,7 @@ Le coût d'une transaction est constitué de deux parties: Le **coût intrinsèq
 Vous trouverez plus d'informations sur la répartition des coûts d'une transaction sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/) (🇬🇧).
 
 
-### Optimisation des couts d'exécution
+### Optimisation des coûts d'exécution
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_low(uint32)` aura pour empreinte `bde6cad1` au lieu de `d27b3841`.
 
@@ -792,7 +792,7 @@ Cette optimisation peut être importante pour les contrats intelligents très co
 Le fait que la recherche soit fractionnée au lieu de linéaire, complique un peu les choses, dans le sens où en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer pour choisir les nouvelles signatures en fonction de l'ordre désiré.
 
 
-### Optimisation des couts intrinsèques
+### Optimisation des coûts intrinsèques
 
 Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
 
