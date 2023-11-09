@@ -26,8 +26,8 @@
 		- [Recherche linéaire runs = 200](#recherche-lin%C3%A9aire-runs--200)
 		- [Recherche fractionnée runs = 1000](#recherche-fractionn%C3%A9e-runs--1000)
 	- [Les optimisations](#les-optimisations)
-		- [Optimisation lors de l'exécution](#optimisation-lors-de-lex%C3%A9cution)
-		- [Optimisation à la transaction](#optimisation-%C3%A0-la-transaction)
+		- [Optimisation des couts d'exécution](#optimisation-des-couts-dex%C3%A9cution)
+		- [Optimisation des couts intrinsèques](#optimisation-des-couts-intrins%C3%A8ques)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
@@ -51,6 +51,7 @@
 L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum, chaque opération effectuée sur Ethereum ayant un coût en gas.
 
 **Rappel :**
+
 - Le **bytecode** représente un smart contract sur la blockchain sous forme d'une séquence d'hexadécimaux.
 - La machine virtuelle Ethereum (**EVM**) exécute les instructions en lisant ce bytecode lors de l'interaction avec le contrat.
 - Chaque instruction élémentaire, codée sur un octet, est appelée **opcode** et a un coût en gas qui reflète les ressources nécessaires à son exécution.
@@ -775,8 +776,12 @@ Si on part sur le principe que les fonctions sont appelées de manière équitab
 
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes (par exemple) vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de la sélection de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
+Le coût d'une transaction est constitué de deux parties: Le **coût intrinsèque** (dont ceux liés aux données utiles des transactions) et le **coût d'exécution**. Nos optimisations portent sur ces deux coûts.
 
-### Optimisation lors de l'exécution
+Pour en savoir plus sur les coûts intrinsèques et d'exécutions, vous trouverz plus d'informations sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/).
+
+
+### Optimisation des couts d'exécution
 
 Pour illustrer la chose, la signature de la fonction `square(uint32)` modifiée ainsi `square_low(uint32)` aura pour empreinte `bde6cad1` au lieu de `d27b3841`.
 
@@ -787,7 +792,7 @@ Cette optimisation peut être importante pour les contrats intelligents très co
 Le fait que la recherche soit fractionnée au lieu de linéaire, complique un peu les choses, dans le sens où en fonction du nombre de fonctions et du niveau d'optimisation du compilateur, les valeurs seuils sont plus délicates à déterminer pour choisir les nouvelles signatures en fonction de l'ordre désiré.
 
 
-### Optimisation à la transaction
+### Optimisation des couts intrinsèques
 
 Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez des données qui spécifient quelle fonction du contrat intelligent vous souhaitez appeler et quels sont les arguments de cette fonction. Or le coût en gaz d'une transaction dépend en partie du nombre d'octets à zéro dans les données de cette transaction. 
 
@@ -896,6 +901,7 @@ Crédits : **Franck Maussand franck@maussand.net**
   - 🇬🇧 [paradigm-ctf-2022/hint-finance at main · paradigmxyz/paradigm-ctf-2022 · GitHub](https://github.com/paradigmxyz/paradigm-ctf-2022/tree/main/hint-finance)
   - 🇬🇧 [GitHub - Laugharne/solc_runs_dispatcher](https://github.com/Laugharne/solc_runs_dispatcher)
   - 🇬🇧 [WhatsABI? with Shazow - YouTube](https://www.youtube.com/watch?v=sfgassm8SKw)
+  - 🇬🇧 [Ethereum Yellow Paper Walkthrough (4/7) - Transaction Execution](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/)
 
 
 
