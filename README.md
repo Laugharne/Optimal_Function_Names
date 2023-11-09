@@ -778,7 +778,7 @@ Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes
 
 Le coût d'une transaction est constitué de deux parties: Le **coût intrinsèque** (dont ceux liés aux données utiles des transactions) et le **coût d'exécution**. Nos optimisations portent sur ces deux coûts.
 
-Pour en savoir plus sur les coûts intrinsèques et d'exécutions, vous trouverz plus d'informations sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/).
+Vous trouverez plus d'informations sur la répartition des coûts d'une transaction sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/) (🇬🇧).
 
 
 ### Optimisation des couts d'exécution
