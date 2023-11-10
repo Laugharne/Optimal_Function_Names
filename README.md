@@ -27,7 +27,7 @@
 		- [Recherche fractionnée runs = 1000](#recherche-fractionn%C3%A9e-runs--1000)
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation des coûts d'exécution](#optimisation-des-co%C3%BBts-dex%C3%A9cution)
-		- [Optimisation des couts intrinsèques](#optimisation-des-couts-intrins%C3%A8ques)
+		- [Optimisation des coûts intrinsèques](#optimisation-des-co%C3%BBts-intrins%C3%A8ques)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
@@ -48,7 +48,7 @@
 
 ## Introduction
 
-L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum, chaque opération effectuée sur Ethereum ayant un coût en gas.
+L'optimisation des coûts en gas est un enjeu clé dans le développement de contrats intelligents sur la blockchain Ethereum, chaque opération effectuée sur Ethereum ayant un coût en gas. Cet article sera aussi l'occasion de fournir du contenu aux lecteurs francophones.
 
 **Rappel :**
 
@@ -65,7 +65,7 @@ Nous discuterons également de diverses stratégies d'optimisation, de l'ordre d
 **Précisions :**
 
 Cette article se base sur :
-1. Du code **solidity** (0.8.13, 0.8.17, 0.8.20, 0.8.22)
+1. Du code **Solidity** (0.8.13, 0.8.17, 0.8.20, 0.8.22)
 2. Compilé avec le compilateur `solc`
 3. Pour des **EVMs** sur **Ethereum**
 
@@ -803,7 +803,7 @@ Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/ye
 - `Gtxdatazero` coûte **4 gas** pour chaque octet nul en transaction.
 - `Gtxdatanonzero` coûte **16 gas** pour chaque octet non-nul, soit **4 fois plus cher**.
 
-Ainsi, chaque fois qu'un octet est à zéro (`00`) est utilisé dans `msg.data` en lieu et place d'un octet non-nul, il économise **12 gas**.
+Ainsi, chaque fois qu'un octet à zéro (`00`) est utilisé dans `msg.data` en lieu et place d'un octet non-nul, il économise **12 gas**.
 
 Cette particularité des EVMs a également un impact sur la consommation d'autres opcodes comme `Gsset` et `Gsreset`.
 
@@ -823,12 +823,12 @@ De même pouvoir utiliser des empreintes avec **trois octets** de poids forts à
 
 Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit278591A(uint)) et [**`deposit_3VXa0(uint256)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit_3VXa0(uint256)) dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
-Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** permettant de ne consommer que **16 gas** avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()).
+Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
 
 
 ## Select0r
 
-J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira une liste de signatures alternatives moins couteuse en gas et permettant un ordonancement.
+J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira une liste de signatures alternatives moins couteuse en gas, permettant un meilleur ordonancement pour le "*function dispatcher*".
 
 [**GitHub - Laugharne/select0r**](https://github.com/Laugharne/select0r/tree/main)
 
