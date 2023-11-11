@@ -120,7 +120,7 @@ En résumé, le "*function dispatcher*" est comme un chef d'orchestre lors des a
 
 Lorsque vous interagissez avec un contrat intelligent via une transaction, vous spécifiez quelle fonction vous souhaitez exécuter. Le "*function dispatcher*" fait donc le lien entre la commande et la fonction spécifique qui sera appelée.
 
-L'empreinte de la fonction est récupérée dans le `calldata` (*) lors de l'éxécution du contrat, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
+L'empreinte de la fonction est récupérée dans le `calldata` lors de l'éxécution du contrat, un `revert` se produit si l'appel ne peut être mis en relation avec une fonction du contrat.
 
 Le mécanisme de sélection est similaire, à un celui d'une structure `switch/case` ou d'un ensemble de `if/else`.
 
@@ -189,7 +189,7 @@ contract MyContract {
 
 Si nous reprenons le précédent code utilisé en exemple, nous obtenons les signatures et empreintes suivantes :
 
-| Fonctions                                              | Signatures                  | Keccak            | Empreintes      |
+| Fonctions                                              | Signatures                  | Keccak            | Empreintes     |
 | ------------------------------------------------------ | --------------------------- | ----------------- | -------------- |
 | **`setValue(uint256 _newValue) external`**             | `setValue(uint256)`         | `55241077...ecbd` | **`55241077`** |
 | **`getValue() public view returns (uint256)`**         | `getValue()`                | `20965255...ad96` | **`20965255`** |
@@ -259,7 +259,7 @@ Sous forme de diagramme, on comprend mieux le mécanisme de sélection similaire
 
 **Important** : L'ordre d'évaluation des fonctions n'est pas le même que celui de déclaration dans le code !
 
-| Ordre d'évaluation | Ordre dans le code | Empreintes   | Signatures                     |
+| Ordre d'évaluation | Ordre dans le code | Empreintes  | Signatures                     |
 | ------------------ | ------------------ | ----------- | ------------------------------ |
 | 1                  | **3**              | `20965255`  | `getValue()`                   |
 | 2                  | **1**              | `3FA4F245`  | `value` (*getter automatique*) |
@@ -466,7 +466,7 @@ Ici les variables de `storage` sont `internal` (attribut par défaut en Solidity
 
 Et nous avons bien 6 fonctions présentes dans le JSON de l'ABI. Les **6 fonctions `public`** suivantes avec leurs empreintes dédiées :
 
-| Fonctions                                      | Signatures        | Empreintes      |
+| Fonctions                                      | Signatures        | Empreintes     |
 | ---------------------------------------------- | ----------------- | -------------- |
 | **`storeA(uint256 num) public`**               | `storeA(uint256)` | **`C534BE7A`** |
 | **`storeB(uint256 num) public`**               | `storeB(uint256)` | **`9AE4B7D0`** |
@@ -693,7 +693,7 @@ Les **opcodes** en jeu pour ce qui nous concerne sont les suivants :
 Ce qui m'a permis d'estimer les coûts en gas de recherche pour chaque fonction, pour les [valeur de runs](#seuils) `200` et `1000` amenant ainsi un traitement différent, séquentiel pour `200 runs` et "fractionné" pour `1000 runs`.
 
 
-| Signatures        | Empreintes        | Gas (linear)   | Gas (splited)   |
+| Signatures        | Empreintes       | Gas (linear)    | Gas (splited)   |
 | ----------------- | ---------------- | --------------- | --------------- |
 | `storeI(uint256)` | `183301E7`       | **22 (*min*)**  | 69              |
 | `retrieve()`      | `2E64CEC1`       | 44              | 91              |
