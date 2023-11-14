@@ -850,7 +850,7 @@ En fin de compte, ces optimisations peuvent faire la différence entre un contra
 
 --------
 
-Crédits : **Franck Maussand franck@maussand.net**
+Crédits : **[Franck Maussand](mailto:franck@maussand.net)**
 
 *Merci à [**Igor Bournazel**](https://github.com/ibourn) pour ses suggestions et la relecture de cet article.*
 
