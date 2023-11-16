@@ -3,7 +3,7 @@
 <!-- TOC -->
 
 - [Optimisation sur Ethereum : Faites la différence avec les noms de fonctions](#optimisation-sur-ethereum--faites-la-diff%C3%A9rence-avec-les-noms-de-fonctions)
-	- [Points clés](#points-cl%C3%A9s)
+	- [TL;DR](#tldr)
 	- [Introduction](#introduction)
 	- [Empreintes et signatures des fonctions](#empreintes-et-signatures-des-fonctions)
 	- [Présentation du "function dispatcher"](#pr%C3%A9sentation-du-function-dispatcher)
@@ -36,7 +36,7 @@
 
 
 
-## Points clés
+## TL;DR
 
 1. L'optimisation des coûts en gas est cruciale pour les contrats intelligents sur Ethereum.
 2. Le "*function dispatcher*" gère l'exécution des fonctions dans les smart contracts pour les EVMs.
@@ -221,22 +221,22 @@ tag 1
   PUSH E0
   SHR 
   DUP1 
-  PUSH 20965255
+  PUSH 20965255  // signature : getValue()
   EQ 
   PUSH [tag] getValue_0
   JUMPI 
   DUP1 
-  PUSH 3FA4F245  
+  PUSH 3FA4F245  // signature : value (automatic storage getters)
   EQ 
   PUSH [tag] 4
   JUMPI 
   DUP1 
-  PUSH 55241077
+  PUSH 55241077  // signature : setValue(uint256)
   EQ 
   PUSH [tag] setValue_uint256_0
   JUMPI 
   DUP1 
-  PUSH E778DDC1
+  PUSH E778DDC1  // signature : getInternalValue()
   EQ 
   PUSH [tag] getInternalValue_0
   JUMPI 
