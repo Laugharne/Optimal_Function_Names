@@ -830,7 +830,7 @@ Par contre, étant donné qu'il ne peut y avoir qu'une valeur unique de sélecti
 
 ## Select0r
 
-J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira une liste de signatures alternatives moins couteuse en gas, permettant un meilleur ordonancement pour le "*function dispatcher*".
+J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira pour une signature de fonction donnée, une liste de signatures alternatives moins couteuse en gas, permettant un meilleur ordonancement pour le "*function dispatcher*".
 
 [**GitHub - Laugharne/select0r**](https://github.com/Laugharne/select0r/tree/main)
 
