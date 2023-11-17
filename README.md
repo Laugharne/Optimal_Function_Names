@@ -28,7 +28,7 @@
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation des coûts d'exécution](#optimisation-des-co%C3%BBts-dex%C3%A9cution)
 		- [Optimisation des coûts intrinsèques](#optimisation-des-co%C3%BBts-intrins%C3%A8ques)
-			- [Exemple de gains intrinsèques :](#exemple-de-gains-intrins%C3%A8ques-)
+			- [Exemples de gains intrinsèques :](#exemples-de-gains-intrins%C3%A8ques-)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
