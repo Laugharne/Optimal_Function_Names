@@ -207,7 +207,7 @@ On notera dans les données de l'ABI, la référence à la donnée du storage `v
 
 Voici, en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de Solidity : 0.8.13)
 
-```yul
+```assembly
 tag 1
   JUMPDEST 
   POP 
