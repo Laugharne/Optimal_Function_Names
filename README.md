@@ -205,7 +205,7 @@ On notera dans les données de l'ABI, la référence à la donnée du storage `v
 
 ##### Code généré
 
-Voici, en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de Solidity : 0.8.13)
+Voici, en extrait le code du "*function dispatcher*" généré par le compilateur `solc` (version de Solidity : 0.8.13) on y voit que valeur numérique de l'empreinte est récupérée dans le `calldata` puis que cette valeur est comparée aux différentes signatures des fonctions permettant de "sauter" au code de la fonction souhaitée. 
 
 ```assembly
 tag 1
