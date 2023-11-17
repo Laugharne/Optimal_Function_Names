@@ -776,9 +776,11 @@ Si on part sur le principe que les fonctions sont appelées de manière équitab
 
 Cependant, en renommant stratégiquement les fonctions, en ajoutant des suffixes (par exemple) vous pouvez influencer le résultat des signatures de fonctions et, par conséquent, les coûts de gaz associés à ces fonctions. Cette pratique peut permettre d'optimiser la consommation de gaz dans votre contrat intelligent, lors de la sélection de la fonction dans l'EVM, mais aussi, comme nous le verrons plus loin, lors des transactions.
 
-Le coût d'une transaction est constitué de deux parties: Le **coût intrinsèque** (dont ceux liés aux données utiles des transactions) et le **coût d'exécution**. Nos optimisations portent sur ces deux coûts.
+Le coût d'une transaction est constitué de deux parties : Le **coût intrinsèque** (dont ceux liés aux données utiles des transactions) et le **coût d'exécution**. Nos optimisations portent sur ces deux coûts.
 
 Vous trouverez plus d'informations sur la répartition des coûts d'une transaction sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/) (🇬🇧).
+
+Le cumul de ces deux approches d'optimisation fait la différence en réduisant **de manière significative** la consommation de gaz dans les contrats intelligents. Particulièrement dans certains cas d'usage comme les MEVs.
 
 
 ### Optimisation des coûts d'exécution
