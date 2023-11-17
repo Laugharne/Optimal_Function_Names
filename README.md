@@ -28,7 +28,7 @@
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation des coûts d'exécution](#optimisation-des-co%C3%BBts-dex%C3%A9cution)
 		- [Optimisation des coûts intrinsèques](#optimisation-des-co%C3%BBts-intrins%C3%A8ques)
-			- [Exemples de gains intrinsèques :](#exemples-de-gains-intrins%C3%A8ques-)
+			- [Exemples de gains sur les coûts intrinsèques :](#exemples-de-gains-sur-les-co%C3%BBts-intrins%C3%A8ques-)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
@@ -607,7 +607,7 @@ Lorsque le nombre de fonctions est inférieur à 4, le processus de sélection s
 
 Des [tests sur des contrats basiques](https://github.com/Laugharne/solc_runs_dispatcher) comportant de 4 à 15 fonctions, avec des optimisations de 200 à 1000 exécutions, ont démontré ces seuils.
 
-Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fractions de séquences de tests en indiquant le nombre de recherches linéaires.
+Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fractionnements en indiquant le nombre de recherches linéaires.
 
 **Relevé du nombre de séquences linéaires en fonction du runs level et de la quantité de fonctions**
 
@@ -781,7 +781,7 @@ Le coût d'une transaction est constitué de deux parties : Le **coût intrinsè
 
 Vous trouverez plus d'informations sur la répartition des coûts d'une transaction sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/) (🇬🇧).
 
-Le cumul de ces deux approches d'optimisation fait la différence en réduisant **de manière significative** la consommation de gaz dans les contrats intelligents. Particulièrement dans certains cas d'usage comme les MEVs.
+Le cumul de ces deux approches d'optimisation fait la différence en réduisant **de manière significative** la consommation de gaz dans les contrats intelligents. Particulièrement dans certains domaines comme les MEVs (arbitrages) ou l'optimisation est vitale.
 
 
 ### Optimisation des coûts d'exécution
@@ -829,15 +829,15 @@ Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-t
 Par contre, étant donné qu'il ne peut y avoir qu'une valeur unique de sélection (empreinte) il ne peut y avoir qu'**une seule fonction dans un contrat** dont l'empreinte possède quatre octets à zéro, même si plusieurs signatures peuvent aboutir à cette empreinte optimisée **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
 
 
-#### Exemples de gains intrinsèques :
+#### Exemples de gains sur les coûts intrinsèques :
 
-| Signatures          | Empreintes | # of zero | Gas | Gain (gas) |
-| ------------------- | ---------- | --------- | --- | ---------- |
-| `execute()`         | `61461954` | 0         | 64  | **0**      |
-| `execute_5Hw()`     | `00af0043` | 1         | 52  | **8**      |
-| `execute_mAX()`     | `0000eb63` | 2         | 40  | **24**     |
-| `execute_6d4S()`    | `000000ae` | 3         | 28  | **36**     |
-| `execute_44g58pv()` | `00000000` | 4         | 16  | **48**     |
+| Signatures          | Empreintes | # de zéros | Gas | Gain (gas) |
+| ------------------- | ---------- | ---------- | --- | ---------- |
+| `execute()`         | `61461954` | 0          | 64  | **0**      |
+| `execute_5Hw()`     | `00af0043` | 1          | 52  | **8**      |
+| `execute_mAX()`     | `0000eb63` | 2          | 40  | **24**     |
+| `execute_6d4S()`    | `000000ae` | 3          | 28  | **36**     |
+| `execute_44g58pv()` | `00000000` | 4          | 16  | **48**     |
 
 
 ## Select0r
@@ -859,6 +859,8 @@ J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de r
 - L'optimisation pour l'exécution n'est pas forcément nécessaire pour les fonctions dites d'administration, ou celles trop peu fréquement appelées.
 
 - Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
+
+- Une optimisation isolée semble représenter peu de chose, surtout comparée aux coût global d'une transaction. En revanche, tout un ensemble d'optimisations opérées sur un ensemble de transactions font toute la différence, et cela ne concerne pas que les optimisations sur le "_function dispatcher_".
 
 En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en gas.
 
