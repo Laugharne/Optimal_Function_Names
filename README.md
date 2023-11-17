@@ -28,6 +28,7 @@
 	- [Les optimisations](#les-optimisations)
 		- [Optimisation des coûts d'exécution](#optimisation-des-co%C3%BBts-dex%C3%A9cution)
 		- [Optimisation des coûts intrinsèques](#optimisation-des-co%C3%BBts-intrins%C3%A8ques)
+			- [Exemple de gains intrinsèques :](#exemple-de-gains-intrins%C3%A8ques-)
 	- [Select0r](#select0r)
 	- [Conclusions](#conclusions)
 	- [Ressources additionnelles](#ressources-additionnelles)
@@ -828,11 +829,23 @@ Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-t
 Par contre, étant donné qu'il ne peut y avoir qu'une valeur unique de sélection (empreinte) il ne peut y avoir qu'**une seule fonction dans un contrat** dont l'empreinte possède quatre octets à zéro, même si plusieurs signatures peuvent aboutir à cette empreinte optimisée **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
 
 
+#### Exemple de gains intrinsèques :
+
+| Signatures          | Empreintes | # of zero | Gas | Gain (gas) |
+| ------------------- | ---------- | --------- | --- | ---------- |
+| `execute()`         | `61461954` | 0         | 64  | **0**      |
+| `execute_5Hw()`     | `00af0043` | 1         | 52  | **8**      |
+| `execute_mAX()`     | `0000eb63` | 2         | 40  | **24**     |
+| `execute_6d4S()`    | `000000ae` | 3         | 28  | **36**     |
+| `execute_44g58pv()` | `00000000` | 4         | 16  | **48**     |
+
+
 ## Select0r
 
 J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de renommer vos fonctions afin d'en optimiser les appels. Le programme fournira pour une signature de fonction donnée, une liste de signatures alternatives moins couteuse en gas, permettant un meilleur ordonancement pour le "*function dispatcher*".
 
 [**GitHub - Laugharne/select0r**](https://github.com/Laugharne/select0r/tree/main)
+
 
 
 ## Conclusions
