@@ -889,7 +889,7 @@ Crédits : **[Franck Maussand](mailto:franck@maussand.net)**
   - 🇬🇧 [The Optimizer — Solidity 0.8.22 documentation](https://docs.soliditylang.org/en/develop/internals/optimizer.html)
 
 - Outils :
-  - 🇬🇧 [GitHub - Laugharne/select0r](https://github.com/Laugharne/select0r/tree/main)
+  - 🇬🇧 [GitHub - Laugharne/select0r](https://github.com/Laugharne/select0r/tree/main) ✨
   - 🇬🇧 [Keccak-256 Online](http://emn178.github.io/online-tools/keccak_256.html)
   - 🇬🇧 [Compiler Explorer](https://godbolt.org/)
   - 🇬🇧 [Solidity Optimize Name](https://emn178.github.io/solidity-optimize-name/)
