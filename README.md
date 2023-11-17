@@ -38,12 +38,12 @@
 
 ## TL;DR
 
-1. L'optimisation des coûts en gas est cruciale pour les contrats intelligents sur Ethereum.
-2. Le "*function dispatcher*" gère l'exécution des fonctions dans les smart contracts pour les EVMs.
-3. Le compilateur Solidity génère le "*function dispatcher*" des fonctions exposées publiquement, alors qu'en Yul cela doit être codé.
-4. Les signatures, hashs et empreintes des fonctions sont déterminés par leurs noms et types de paramètres.
-5. Le réglage d'optimisation du compilateur et le nombre de fonctions impactent l'algorithme de sélection des fonctions.
-6. Le renommage stratégique des fonctions optimise les coûts en gas et l'ordre de sélection, de par les valeurs des empreintes.
+1. *L'optimisation des coûts en gas est cruciale pour les contrats intelligents sur Ethereum.*
+2. *Le "function dispatcher" gère l'exécution des fonctions dans les smart contracts pour les EVMs.*
+3. *Le compilateur Solidity génère le "function dispatcher" des fonctions exposées publiquement, alors qu'en Yul cela doit être codé.*
+4. *Les signatures, hashs et empreintes des fonctions sont déterminés par leurs noms et types de paramètres.*
+5. *Le réglage d'optimisation du compilateur et le nombre de fonctions impactent l'algorithme de sélection des fonctions.*
+6. *Le renommage stratégique des fonctions optimise les coûts en gas et l'ordre de sélection, de par les valeurs des empreintes.*
 
 
 ## Introduction
