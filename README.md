@@ -282,7 +282,7 @@ La fonction d'empreinte `3FA4F245` est en fait un **getter** automatique de la d
 Nous retrouvons d'ailleurs dans les opcodes, l'empreinte de sélection (`3FA4F245`) et la fonction (à l'adresse `tag 4`) du getter automatique pour cette variable.
 
 **Sélecteur** :
-```yul
+```assembly
   DUP1 
   PUSH 3FA4F245  
   EQ 
@@ -291,7 +291,7 @@ Nous retrouvons d'ailleurs dans les opcodes, l'empreinte de sélection (`3FA4F24
 ```
 
 **Fonction** :
-```yul
+```assembly
 tag 4
   JUMPDEST 
   PUSH [tag] 11
@@ -319,7 +319,7 @@ tag 13
 
 `getter` ayant d'ailleurs un code identique à celui de la fonction `getValue()`
 
-```yul
+```assembly
 tag getValue_0
   JUMPDEST 
   PUSH [tag] getValue_1
@@ -479,7 +479,7 @@ Suivant le [**niveau d'optimisation**](https://docs.soliditylang.org/en/develop/
 
 Avec un niveau à **200** (`--optimize-runs 200`) nous obtenons le type de code précédemment généré, avec ses `if/else` en cascade.
 
-```yul
+```assembly
 tag 1
   JUMPDEST 
   POP 
@@ -529,7 +529,7 @@ tag 1
 
 Par contre, avec un niveau de `runs` plus élevé (`--optimize-runs 300`)
 
-```yul
+```assembly
 tag 1
   JUMPDEST
   POP
