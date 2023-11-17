@@ -829,7 +829,7 @@ Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-t
 Par contre, étant donné qu'il ne peut y avoir qu'une valeur unique de sélection (empreinte) il ne peut y avoir qu'**une seule fonction dans un contrat** dont l'empreinte possède quatre octets à zéro, même si plusieurs signatures peuvent aboutir à cette empreinte optimisée **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
 
 
-#### Exemple de gains intrinsèques :
+#### Exemples de gains intrinsèques :
 
 | Signatures          | Empreintes | # of zero | Gas | Gain (gas) |
 | ------------------- | ---------- | --------- | --- | ---------- |
