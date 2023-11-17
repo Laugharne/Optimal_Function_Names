@@ -221,22 +221,22 @@ tag 1
   PUSH E0
   SHR 
   DUP1 
-  PUSH 20965255  // ← signature : getValue()
+  PUSH 20965255  // ⬅️ signature : getValue()
   EQ 
   PUSH [tag] getValue_0
   JUMPI 
   DUP1 
-  PUSH 3FA4F245  // ← signature : value (automatic storage getters)
+  PUSH 3FA4F245  // ⬅️ signature : value (automatic storage getters)
   EQ 
   PUSH [tag] 4
   JUMPI 
   DUP1 
-  PUSH 55241077  // ← signature : setValue(uint256)
+  PUSH 55241077  // ⬅️ signature : setValue(uint256)
   EQ 
   PUSH [tag] setValue_uint256_0
   JUMPI 
   DUP1 
-  PUSH E778DDC1  // ← signature : getInternalValue()
+  PUSH E778DDC1  // ⬅️ signature : getInternalValue()
   EQ 
   PUSH [tag] getInternalValue_0
   JUMPI 
