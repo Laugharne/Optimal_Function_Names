@@ -823,7 +823,7 @@ De même pouvoir utiliser des empreintes avec **trois octets** de poids forts à
 
 Comme par exemple [**`deposit278591A(uint)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit278591A(uint)) et [**`deposit_3VXa0(uint256)`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=deposit_3VXa0(uint256)) dont les empreintes respectives, sont **`00000070`** et  **`0000007e`**.
 
-Par contre, il ne peut y avoir qu'une seule fonction éligible par contrat qui puisse avoir comme empreinte **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
+Par contre, étant donné qu'il ne peut y avoir qu'une valeur unique de sélection (empreinte) il ne peut y avoir qu'**une seule fonction dans un contrat** dont l'empreinte possède quatre octets à zéro, même si plusieurs signatures peuvent aboutir à cette empreinte optimisée **`00000000`** permettant de ne consommer que **16 gas** (exemple avec la signature suivante : [**`execute_44g58pv()`**](https://emn178.github.io/online-tools/keccak_256.html?input_type=utf-8&input=execute_44g58pv()))
 
 
 ## Select0r
