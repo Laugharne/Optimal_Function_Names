@@ -781,7 +781,7 @@ Le coût d'une transaction est constitué de deux parties : Le **coût intrinsè
 
 Vous trouverez plus d'informations sur la répartition des coûts d'une transaction sur [cette page](https://www.lucassaldanha.com/transaction-execution-ethereum-yellow-paper-walkthrough-4-7/) (🇬🇧).
 
-Le cumul de ces deux approches d'optimisation fait la différence en réduisant **de manière significative** la consommation de gaz dans les contrats intelligents. Particulièrement dans certains domaines comme les MEVs (arbitrages) ou l'optimisation est vitale.
+Le cumul de ces deux approches d'optimisation fait la différence en réduisant **de manière significative** la consommation de gaz dans les contrats intelligents. Particulièrement dans certains domaines comme la MEV (arbitrage) où l'optimisation est vitale.
 
 
 ### Optimisation des coûts d'exécution
@@ -922,3 +922,4 @@ Crédits : **[Franck Maussand](mailto:franck@maussand.net)**
 
 
 
+  
