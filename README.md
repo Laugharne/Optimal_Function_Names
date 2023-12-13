@@ -252,8 +252,8 @@ tag 2
 
 Sous forme de diagramme, on comprend mieux le mécanisme de sélection similaire à un celui d'une structure `switch/case` ou d'un ensemble de `if/else`.
 
-![](functions_dispatcher_diagram.png)
-<!-- ![](functions_dispatcher_diagram.svg) -->
+![](assets/functions_dispatcher_diagram.png)
+<!-- ![](assets/functions_dispatcher_diagram.svg) -->
 
 
 ##### Ordre d'évaluation
@@ -592,7 +592,7 @@ tag 2
 
 Les opcodes et le flux d'exécution avec `--optimize-runs 300`, ne sont plus les mêmes, comme montré dans le diagramme suivant.
 
-![](functions_split_dispatcher_diagram.png)
+![](assets/functions_split_dispatcher_diagram.png)
 
 On voit que les tests sont "découpés" en deux recherches linéaires autour d'une valeur pivot `B87C712B`, diminuant ainsi la consommation pour les cas les moins favorables `storeB(uint256)` et `storeE(uint256)`.
 
@@ -611,7 +611,7 @@ Le tableau suivant (qui résulte de ces tests) nous montre le nombre de fraction
 
 **Relevé du nombre de séquences linéaires en fonction du runs level et de la quantité de fonctions**
 
-![](func_runs.png)
+![](assets/func_runs.png)
 
 ( *F : Nbr functions / R : Runs level* )
 
@@ -801,7 +801,7 @@ Lorsque vous envoyez une transaction sur la blockchain Ethereum, vous incluez de
 
 Comme précisé dans l'[**Ethereum Yellow Paper**](https://ethereum.github.io/yellowpaper/paper.pdf) (Berlin version, 🇬🇧)
 
-![](g_tx_data.png)
+![](assets/g_tx_data.png)
 
 - `Gtxdatazero` coûte **4 gas** pour chaque octet nul en transaction.
 - `Gtxdatanonzero` coûte **16 gas** pour chaque octet non-nul, soit **4 fois plus cher**.
@@ -860,7 +860,7 @@ J'ai réalisé **Select0r**, un outil écrit en **Rust** qui vous permettra de r
 
 - Par contre, c'est à prioriser pour les fonctions supposément les plus fréquemment appelées (à déterminer manuellement ou statistiquement lors de tests pratiques).
 
-- Une optimisation isolée semble représenter peu de chose, surtout comparée aux coût global d'une transaction. En revanche, tout un ensemble d'optimisations opérées sur un ensemble de transactions font toute la différence, et cela ne concerne pas que les optimisations sur le "_function dispatcher_".
+- Une optimisation isolée semble représenter peu de chose, surtout comparée au coût global d'une transaction. En revanche, tout un ensemble d'optimisations opérées sur un ensemble de transactions font toute la différence, et cela ne concerne pas que les optimisations sur le "_function dispatcher_".
 
 En fin de compte, ces optimisations peuvent faire la différence entre un contrat économique et un contrat coûteux en gas.
 
